@@ -1,0 +1,1411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EcoLoop - Sustainable Living Gamification</title>
+<script src="https://code.iconify.design/iconify-icon/2.1.0/iconify-icon.min.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700;800&display=swap');
+
+  :root {
+    --primary: #10B981; --primary-dark: #059669; --primary-light: #D1FAE5;
+    --secondary: #3B82F6; --accent: #F59E0B; --accent-light: #FEF3C7;
+    --danger: #EF4444; --warm-amber: #D97706; --warm-terra: #C2410C;
+    --bg: #060E1A; --bg-card: rgba(14,23,38,0.78); --bg-card-hover: rgba(22,34,54,0.85);
+    --bg-elevated: rgba(18,28,46,0.92); --text: #F1F5F9; --text-dim: #94A3B8; --text-muted: #64748B;
+    --border: rgba(255,255,255,0.06); --border-light: rgba(255,255,255,0.1);
+    --gradient-eco: linear-gradient(135deg, #059669 0%, #10B981 40%, #06B6D4 100%);
+    --gradient-gold: linear-gradient(135deg, #F59E0B, #F97316);
+    --gradient-purple: linear-gradient(135deg, #8B5CF6, #A855F7);
+    --gradient-pink: linear-gradient(135deg, #EC4899, #F43F5E);
+    --gradient-blue: linear-gradient(135deg, #3B82F6, #06B6D4);
+    --shadow: 0 12px 40px rgba(0,0,0,0.4); --shadow-sm: 0 4px 16px rgba(0,0,0,0.2);
+    --shadow-glow: 0 0 30px rgba(16,185,129,0.15); --glass-glow: inset 0 1px 0 rgba(255,255,255,0.06);
+    --radius: 20px; --radius-sm: 14px; --radius-xs: 10px; --radius-xl: 24px;
+    --tab-h: 60px; --top-h: 56px;
+    --neon-glow: 0 0 20px rgba(16,185,129,0.4);
+  }
+  * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  html { overflow:hidden; height:100%; }
+  body {
+    font-family:'Inter',-apple-system,sans-serif; background:var(--bg); color:var(--text);
+    height:100%; overflow:hidden; max-width:430px; margin:0 auto; position:relative;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  /* ====== NOISE TEXTURE ====== */
+  body::after {
+    content:''; position:fixed; inset:0; z-index:0; pointer-events:none; opacity:0.03;
+    background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-size:128px 128px;
+  }
+
+  /* ====== MESH BACKGROUND ====== */
+  body::before {
+    content:''; position:fixed; inset:0; z-index:0; pointer-events:none;
+    background:
+      radial-gradient(ellipse 80% 60% at 20% 40%, rgba(16,185,129,0.1) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 80% at 80% 20%, rgba(139,92,246,0.07) 0%, transparent 60%),
+      radial-gradient(ellipse 70% 50% at 50% 90%, rgba(59,130,246,0.08) 0%, transparent 60%);
+    background-size: 200% 200%;
+    animation: meshShift 25s ease-in-out infinite alternate;
+  }
+  @keyframes meshShift {
+    0% { background-position: 0% 50%, 100% 50%, 50% 100%; }
+    100% { background-position: 100% 0%, 0% 100%, 0% 50%; }
+  }
+
+  /* ====== AURORA (lighter for mobile perf) ====== */
+  .aurora { position:fixed; inset:0; z-index:0; pointer-events:none; overflow:hidden; }
+  .aurora-band {
+    position:absolute; width:200%; height:160px; border-radius:50%;
+    filter:blur(80px); opacity:0.35;
+  }
+  .aurora-band:nth-child(1) {
+    top:5%; left:-30%;
+    background:linear-gradient(90deg, transparent 10%, rgba(16,185,129,0.2) 40%, rgba(6,182,212,0.14) 60%, transparent 90%);
+    animation: auroraWave1 14s ease-in-out infinite alternate;
+  }
+  .aurora-band:nth-child(2) {
+    top:35%; left:-20%;
+    background:linear-gradient(90deg, transparent 10%, rgba(139,92,246,0.12) 50%, transparent 90%);
+    animation: auroraWave2 18s ease-in-out infinite alternate;
+  }
+  .aurora-band:nth-child(3) {
+    top:65%; left:-40%;
+    background:linear-gradient(90deg, transparent 15%, rgba(59,130,246,0.1) 45%, rgba(16,185,129,0.08) 65%, transparent 85%);
+    animation: auroraWave3 22s ease-in-out infinite alternate;
+  }
+  @keyframes auroraWave1 { 0%{transform:translateX(-10%) rotate(-2deg)} 100%{transform:translateX(15%) rotate(2deg)} }
+  @keyframes auroraWave2 { 0%{transform:translateX(10%) rotate(1deg)} 100%{transform:translateX(-20%) rotate(-3deg)} }
+  @keyframes auroraWave3 { 0%{transform:translateX(-15%) rotate(1deg)} 100%{transform:translateX(10%) rotate(-2deg)} }
+
+  /* ====== CANVAS PARTICLES ====== */
+  #particleCanvas { position:fixed; inset:0; z-index:0; pointer-events:none; }
+
+  /* ====== TOP STATUS BAR ====== */
+  .top-bar {
+    position:fixed; top:0; left:50%; transform:translateX(-50%);
+    width:100%; max-width:430px; height:var(--top-h); z-index:200;
+    display:flex; align-items:center; gap:10px; padding:0 16px;
+    background:rgba(6,14,26,0.85); backdrop-filter:blur(24px) saturate(180%);
+    border-bottom:1px solid var(--border);
+  }
+  .top-bar-avatar {
+    width:36px; height:36px; border-radius:50%; overflow:hidden; flex-shrink:0;
+    position:relative;
+  }
+  .top-bar-avatar img { width:100%; height:100%; object-fit:cover; }
+  .top-bar-avatar-ring {
+    position:absolute; inset:-3px; border-radius:50%;
+    border:2.5px solid transparent; border-top-color:var(--primary); border-right-color:var(--primary);
+    animation:avatarRingSpin 3s linear infinite;
+  }
+  @keyframes avatarRingSpin { to { transform:rotate(360deg); } }
+  .top-bar-level {
+    font-family:'Space Grotesk'; font-size:13px; font-weight:700;
+    background:var(--gradient-eco); -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+  }
+  .top-bar-xp-wrap { flex:1; display:flex; flex-direction:column; gap:2px; }
+  .top-bar-xp-text { font-size:10px; color:var(--text-muted); font-weight:500; }
+  .top-bar-xp-bar { height:6px; background:rgba(255,255,255,0.06); border-radius:3px; overflow:hidden; }
+  .top-bar-xp-fill {
+    height:100%; border-radius:3px; background:var(--gradient-eco);
+    transition:width 1s cubic-bezier(.25,.46,.45,.94); position:relative;
+  }
+  .top-bar-xp-fill::after {
+    content:''; position:absolute; inset:0;
+    background:linear-gradient(90deg, transparent, rgba(255,255,255,0.35), transparent);
+    animation:shimmer 2.5s infinite;
+  }
+  .top-bar-coins {
+    display:flex; align-items:center; gap:4px; font-family:'Space Grotesk';
+    font-size:14px; font-weight:700; color:var(--accent);
+    background:rgba(245,158,11,0.08); padding:6px 12px; border-radius:20px;
+    border:1px solid rgba(245,158,11,0.12);
+  }
+  .top-bar-coins iconify-icon { font-size:16px; }
+
+  /* ====== BOTTOM TAB BAR ====== */
+  .bottom-tabs {
+    position:fixed; bottom:0; left:50%; transform:translateX(-50%);
+    width:100%; max-width:430px; height:var(--tab-h); z-index:200;
+    display:flex; align-items:center; justify-content:space-around;
+    background:rgba(6,14,26,0.9); backdrop-filter:blur(24px) saturate(180%);
+    border-top:1px solid var(--border);
+    padding-bottom:env(safe-area-inset-bottom, 0);
+  }
+  .tab-item {
+    display:flex; flex-direction:column; align-items:center; gap:2px;
+    padding:6px 0; cursor:pointer; position:relative;
+    transition:all 0.3s cubic-bezier(.25,.46,.45,.94); min-width:56px;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .tab-item iconify-icon { font-size:24px; color:var(--text-muted); transition:all 0.3s; }
+  .tab-item span { font-size:10px; color:var(--text-muted); font-weight:500; transition:all 0.3s; }
+  .tab-item.active iconify-icon { color:var(--primary); transform:scale(1.15); filter:drop-shadow(0 0 8px rgba(16,185,129,0.5)); }
+  .tab-item.active span { color:var(--primary); font-weight:700; }
+  .tab-item .tab-dot {
+    position:absolute; top:2px; right:8px; width:8px; height:8px;
+    background:var(--danger); border-radius:50%; border:2px solid var(--bg);
+  }
+  .tab-glow {
+    position:absolute; bottom:100%; left:50%; transform:translateX(-50%);
+    width:40px; height:4px; border-radius:2px;
+    background:var(--primary); opacity:0; transition:opacity 0.3s;
+    box-shadow:0 0 12px rgba(16,185,129,0.6);
+  }
+  .tab-item.active .tab-glow { opacity:1; }
+
+  /* ====== APP LAYOUT ====== */
+  .app { position:relative; z-index:1; height:100%; overflow:hidden; }
+  .main {
+    height:100%; overflow-y:auto; overflow-x:hidden;
+    padding:calc(var(--top-h) + 8px) 16px calc(var(--tab-h) + 8px);
+    -webkit-overflow-scrolling:touch; scroll-behavior:smooth;
+  }
+  .page {
+    display:none; min-height:100%;
+    animation:pageIn 0.35s cubic-bezier(.25,.46,.45,.94) forwards;
+  }
+  .page.active { display:block; }
+  @keyframes pageIn {
+    from { opacity:0; transform:translateY(16px); }
+    to { opacity:1; transform:translateY(0); }
+  }
+  .page-header { margin-bottom:20px; }
+  .page-title {
+    font-family:'Space Grotesk',sans-serif; font-size:26px; font-weight:800;
+    margin-bottom:6px; letter-spacing:-0.5px; display:flex; align-items:center; gap:10px;
+  }
+  .page-title iconify-icon { font-size:26px; }
+  .page-subtitle { color:var(--text-dim); font-size:13px; line-height:1.5; }
+
+  /* ====== CARD BASE (Glass) ====== */
+  .card, .stat-card, .challenge-card, .achievement-card, .reward-card, .chart-container, .podium-card, .lb-row {
+    background:var(--bg-card); backdrop-filter:blur(20px) saturate(180%);
+    border:1px solid var(--border); box-shadow:var(--glass-glow);
+    transition:all 0.3s cubic-bezier(.25,.46,.45,.94);
+  }
+  /* Tap bounce for all interactive cards */
+  .stat-card:active, .challenge-card:active, .achievement-card:active,
+  .reward-card:active, .task-mini:active, .lb-row:active, .podium-card:active {
+    transform:scale(0.96) !important;
+    transition:transform 0.1s ease !important;
+  }
+
+  /* ====== DAILY CHECK-IN STRIP ====== */
+  .daily-checkin {
+    display:flex; gap:6px; padding:14px; margin-bottom:16px;
+    background:var(--bg-card); border:1px solid var(--border);
+    border-radius:var(--radius); align-items:center; overflow:hidden;
+  }
+  .checkin-label {
+    font-size:11px; font-weight:700; color:var(--accent);
+    writing-mode:vertical-lr; text-orientation:mixed; letter-spacing:1px;
+  }
+  .checkin-days { display:flex; gap:6px; flex:1; justify-content:space-around; }
+  .checkin-day {
+    width:38px; height:44px; border-radius:12px; display:flex; flex-direction:column;
+    align-items:center; justify-content:center; gap:2px;
+    background:rgba(255,255,255,0.02); border:1px solid var(--border);
+    font-size:10px; color:var(--text-muted); font-weight:600;
+    transition:all 0.3s; cursor:pointer;
+  }
+  .checkin-day iconify-icon { font-size:14px; }
+  .checkin-day.checked {
+    background:rgba(16,185,129,0.08); border-color:rgba(16,185,129,0.2);
+    color:var(--primary);
+  }
+  .checkin-day.checked iconify-icon { color:var(--primary); }
+  .checkin-day.today {
+    background:var(--gradient-gold); color:white; border-color:transparent;
+    box-shadow:0 2px 12px rgba(245,158,11,0.3);
+    animation:todayPulse 2s ease-in-out infinite;
+  }
+  .checkin-day.today iconify-icon { color:white; }
+  @keyframes todayPulse {
+    0%,100% { box-shadow:0 2px 12px rgba(245,158,11,0.3); }
+    50% { box-shadow:0 2px 20px rgba(245,158,11,0.5); }
+  }
+
+  /* ====== HERO BANNER (mobile) ====== */
+  .hero-banner {
+    position:relative; border-radius:var(--radius); overflow:hidden; margin-bottom:16px; height:160px;
+  }
+  .hero-banner-bg {
+    position:absolute; inset:0;
+    background-image:url('https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800&h=400&fit=crop&q=80');
+    background-size:cover; background-position:center;
+  }
+  .hero-banner-overlay {
+    position:absolute; inset:0;
+    background:linear-gradient(135deg, rgba(6,14,26,0.88), rgba(16,185,129,0.15));
+  }
+  .hero-banner-content {
+    position:relative; z-index:1; padding:20px;
+    display:flex; justify-content:space-between; align-items:center; height:100%;
+  }
+  .hero-greeting h1 { font-family:'Space Grotesk',sans-serif; font-size:22px; font-weight:800; margin-bottom:6px; letter-spacing:-0.3px; }
+  .hero-greeting p { color:rgba(255,255,255,0.75); font-size:12px; line-height:1.4; }
+  .hero-greeting .streak-highlight {
+    color:var(--accent); font-weight:700;
+    background:rgba(245,158,11,0.15); padding:2px 8px; border-radius:6px;
+    display:inline-flex; align-items:center; gap:4px;
+  }
+  .hero-illustration { width:168px; height:auto; flex-shrink:0; }
+
+  /* ====== STREAK FLAME SVG ====== */
+  .streak-flame { display:inline-block; vertical-align:middle; }
+  .streak-flame svg { width:18px; height:18px; }
+
+  /* ====== STATS (2x2 grid) ====== */
+  .stats-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:16px; }
+  .stat-card {
+    border-radius:var(--radius-sm); padding:16px; overflow:hidden; cursor:pointer; position:relative;
+  }
+  .stat-card::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; }
+  .stat-card:nth-child(1)::before { background:var(--gradient-eco); }
+  .stat-card:nth-child(2)::before { background:var(--gradient-gold); }
+  .stat-card:nth-child(3)::before { background:var(--gradient-purple); }
+  .stat-card:nth-child(4)::before { background:var(--gradient-blue); }
+  .stat-icon-wrap { width:40px; height:40px; border-radius:12px; display:flex; align-items:center; justify-content:center; margin-bottom:10px; }
+  .stat-card:nth-child(1) .stat-icon-wrap { background:rgba(16,185,129,0.12); color:var(--primary); }
+  .stat-card:nth-child(2) .stat-icon-wrap { background:rgba(245,158,11,0.12); color:var(--accent); }
+  .stat-card:nth-child(3) .stat-icon-wrap { background:rgba(139,92,246,0.12); color:#8B5CF6; }
+  .stat-card:nth-child(4) .stat-icon-wrap { background:rgba(59,130,246,0.12); color:var(--secondary); }
+  .stat-icon-wrap iconify-icon { font-size:20px; }
+  .stat-value { font-family:'Space Grotesk',sans-serif; font-size:28px; font-weight:800; margin-bottom:2px; letter-spacing:-0.5px; }
+  .stat-label { font-size:11px; color:var(--text-dim); }
+  .stat-change { font-size:10px; color:var(--primary); margin-top:6px; display:flex; align-items:center; gap:3px; font-weight:500; }
+  .stat-change iconify-icon { font-size:14px; }
+
+  /* ====== DASHBOARD CARDS ====== */
+  .dash-grid { display:flex; flex-direction:column; gap:12px; }
+  .card { border-radius:var(--radius); padding:16px; }
+  .card-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; }
+  .card-title { font-size:14px; font-weight:700; display:flex; align-items:center; gap:6px; }
+  .card-title iconify-icon { font-size:18px; color:var(--primary); }
+  .card-action { font-size:12px; color:var(--primary); cursor:pointer; font-weight:600; display:flex; align-items:center; gap:4px; }
+
+  /* Tasks */
+  .task-preview { display:flex; flex-direction:column; gap:8px; }
+  .task-mini {
+    display:flex; align-items:center; gap:12px; padding:12px;
+    background:rgba(255,255,255,0.02); border:1px solid var(--border);
+    border-radius:var(--radius-sm); cursor:pointer; transition:all 0.2s;
+  }
+  .task-mini-icon { width:44px; height:44px; border-radius:12px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+  .task-mini-icon iconify-icon { font-size:22px; }
+  .task-mini-name { font-size:14px; font-weight:600; flex:1; }
+  .task-mini-pts { font-size:13px; font-weight:700; color:var(--accent); }
+  .task-mini-check {
+    width:32px; height:32px; border:2px solid var(--border-light); border-radius:50%;
+    display:flex; align-items:center; justify-content:center; transition:all 0.3s; cursor:pointer;
+    flex-shrink:0;
+  }
+  .task-mini-check.done { background:var(--primary); border-color:var(--primary); animation:checkPop 0.4s cubic-bezier(.175,.885,.32,1.275); }
+  @keyframes checkPop { 0%{transform:scale(0.5)} 50%{transform:scale(1.2)} 100%{transform:scale(1)} }
+
+  /* Streak Card */
+  .streak-display { text-align:center; padding:8px 0; }
+  .streak-number {
+    font-family:'Space Grotesk'; font-size:56px; font-weight:800;
+    background:var(--gradient-gold); -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+    line-height:1; display:inline-flex; align-items:center; gap:8px;
+  }
+  .streak-label { font-size:13px; color:var(--text-dim); margin-top:6px; }
+  .streak-days { display:flex; justify-content:center; gap:8px; margin-top:14px; }
+  .streak-day {
+    width:36px; height:36px; border-radius:50%; background:rgba(255,255,255,0.03);
+    border:1px solid var(--border); display:flex; align-items:center; justify-content:center;
+    font-size:10px; color:var(--text-muted); font-weight:600; transition:all 0.3s;
+  }
+  .streak-day.active { background:var(--gradient-gold); color:white; font-weight:700; border-color:transparent; box-shadow:0 2px 10px rgba(245,158,11,0.3); }
+  .streak-day.today { border:2px solid var(--accent); background:rgba(245,158,11,0.08); color:var(--accent); font-weight:700; }
+
+  /* ====== IMPACT MINI (merged into dashboard) ====== */
+  .impact-mini {
+    border-radius:var(--radius); padding:20px; position:relative; overflow:hidden;
+    background:var(--bg-card); border:1px solid var(--border); margin-top:12px;
+  }
+  .impact-mini-bg {
+    position:absolute; inset:0;
+    background-image:url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=600&h=300&fit=crop&q=80');
+    background-size:cover; background-position:center; opacity:0.15;
+  }
+  .impact-mini-inner { position:relative; z-index:1; }
+  .impact-mini-title { font-size:12px; color:var(--text-dim); margin-bottom:8px; display:flex; align-items:center; gap:6px; }
+  .impact-mini-title iconify-icon { color:var(--primary); }
+  .impact-mini-value {
+    font-family:'Space Grotesk'; font-size:42px; font-weight:800;
+    background:var(--gradient-eco); -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+    line-height:1;
+  }
+  .impact-mini-unit { font-size:14px; color:var(--primary); font-weight:600; margin-top:4px; }
+  .impact-mini-stats {
+    display:flex; gap:16px; margin-top:14px;
+  }
+  .impact-mini-stat { text-align:center; flex:1; }
+  .impact-mini-stat iconify-icon { font-size:20px; color:var(--primary); display:block; margin-bottom:4px; }
+  .impact-mini-stat-val { font-family:'Space Grotesk'; font-size:18px; font-weight:800; }
+  .impact-mini-stat-label { font-size:9px; color:var(--text-muted); margin-top:2px; }
+
+  /* ====== CHALLENGES (mobile) ====== */
+  .challenge-progress-ring { text-align:center; margin-bottom:20px; }
+  .challenges-grid { display:flex; flex-direction:column; gap:12px; }
+  .challenge-card {
+    border-radius:var(--radius); padding:16px; text-align:left;
+    cursor:pointer; overflow:hidden; position:relative;
+    display:flex; align-items:center; gap:14px;
+  }
+  .challenge-card.completed { border-color:var(--primary); background:rgba(16,185,129,0.04); }
+  .challenge-card.completed .completed-check { display:flex; }
+  .completed-check {
+    display:none; position:absolute; top:12px; right:12px; width:26px; height:26px;
+    background:var(--gradient-eco); border-radius:50%; align-items:center; justify-content:center;
+    box-shadow:0 2px 10px rgba(16,185,129,0.3);
+  }
+  .completed-check iconify-icon { font-size:14px; color:white; }
+  .challenge-icon-wrap {
+    width:56px; height:56px; border-radius:16px; flex-shrink:0;
+    display:flex; align-items:center; justify-content:center; position:relative;
+  }
+  .challenge-icon-wrap iconify-icon { font-size:26px; animation:iconFloat 3s ease-in-out infinite; }
+  @keyframes iconFloat { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-3px)} }
+  .challenge-card:nth-child(1) .challenge-icon-wrap { background:rgba(59,130,246,0.1); }
+  .challenge-card:nth-child(2) .challenge-icon-wrap { background:rgba(16,185,129,0.1); }
+  .challenge-card:nth-child(3) .challenge-icon-wrap { background:rgba(139,92,246,0.1); }
+  .challenge-card:nth-child(4) .challenge-icon-wrap { background:rgba(245,158,11,0.1); }
+  .challenge-card:nth-child(5) .challenge-icon-wrap { background:rgba(236,72,153,0.1); }
+  .challenge-card:nth-child(6) .challenge-icon-wrap { background:rgba(6,182,212,0.1); }
+  .challenge-card:nth-child(1) .challenge-icon-wrap iconify-icon { color:#3B82F6; }
+  .challenge-card:nth-child(2) .challenge-icon-wrap iconify-icon { color:#10B981; }
+  .challenge-card:nth-child(3) .challenge-icon-wrap iconify-icon { color:#8B5CF6; }
+  .challenge-card:nth-child(4) .challenge-icon-wrap iconify-icon { color:#F59E0B; }
+  .challenge-card:nth-child(5) .challenge-icon-wrap iconify-icon { color:#EC4899; }
+  .challenge-card:nth-child(6) .challenge-icon-wrap iconify-icon { color:#06B6D4; }
+  .challenge-info { flex:1; min-width:0; }
+  .challenge-name { font-size:15px; font-weight:700; margin-bottom:3px; }
+  .challenge-desc { font-size:11px; color:var(--text-dim); line-height:1.4; margin-bottom:6px; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+  .challenge-meta { display:flex; align-items:center; gap:8px; }
+  .challenge-reward {
+    display:inline-flex; align-items:center; gap:4px;
+    background:rgba(245,158,11,0.06); border:1px solid rgba(245,158,11,0.12);
+    color:var(--accent); padding:3px 10px; border-radius:12px; font-size:11px; font-weight:600;
+  }
+  .challenge-reward iconify-icon { font-size:13px; }
+  .challenge-difficulty { display:flex; gap:3px; }
+  .diff-dot { width:6px; height:6px; border-radius:50%; background:rgba(255,255,255,0.06); }
+  .diff-dot.filled { background:var(--primary); box-shadow:0 0 6px rgba(16,185,129,0.4); }
+  .challenge-btn {
+    display:flex; align-items:center; justify-content:center; gap:6px;
+    width:44px; height:44px; flex-shrink:0;
+    background:var(--gradient-eco); color:white; border:none; border-radius:14px;
+    font-size:18px; cursor:pointer; transition:all 0.2s;
+    font-family:inherit; position:relative; overflow:hidden;
+  }
+  .challenge-btn:active { transform:scale(0.9); }
+  .challenge-btn.done { background:rgba(16,185,129,0.1); color:var(--primary); cursor:default; width:auto; padding:0 14px; font-size:12px; font-weight:600; }
+
+  /* ====== ACHIEVEMENTS (3-col compact) ====== */
+  .achievements-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
+  .achievement-card {
+    border-radius:var(--radius-sm); padding:14px 10px; text-align:center; position:relative; overflow:hidden;
+  }
+  .achievement-card.locked { opacity:0.3; filter:grayscale(0.9); }
+  .achievement-card.locked .lock-overlay {
+    position:absolute; inset:0; display:flex; align-items:center; justify-content:center; z-index:2;
+  }
+  .achievement-card.locked .lock-overlay iconify-icon { font-size:20px; color:var(--text-muted); opacity:0.5; }
+  .achievement-card.unlocked { border-color:rgba(245,158,11,0.15); }
+  .achievement-card.unlocked::after {
+    content:''; position:absolute; top:0; left:-100%; width:60%; height:100%;
+    background:linear-gradient(90deg, transparent, rgba(245,158,11,0.06), transparent);
+    transition:left 0.6s ease;
+  }
+  .achievement-icon-wrap {
+    width:48px; height:48px; border-radius:50%; margin:0 auto 8px;
+    display:flex; align-items:center; justify-content:center; background:rgba(245,158,11,0.06);
+  }
+  .achievement-icon-wrap iconify-icon { font-size:22px; color:#F59E0B; }
+  .achievement-card.locked .achievement-icon-wrap { background:rgba(255,255,255,0.03); }
+  .achievement-card.locked .achievement-icon-wrap iconify-icon { color:var(--text-muted); }
+  .achievement-name { font-size:11px; font-weight:700; margin-bottom:4px; }
+  .achievement-desc { font-size:9px; color:var(--text-dim); margin-bottom:8px; line-height:1.3; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+  .achievement-progress { width:100%; height:4px; background:rgba(255,255,255,0.04); border-radius:2px; overflow:hidden; }
+  .achievement-progress-fill { height:100%; background:var(--gradient-gold); border-radius:2px; transition:width 1.2s cubic-bezier(.25,.46,.45,.94); }
+  .achievement-progress-text { font-size:9px; color:var(--text-muted); margin-top:4px; font-weight:500; }
+  .unlock-badge {
+    position:absolute; top:6px; right:6px; background:var(--gradient-gold);
+    width:20px; height:20px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+  }
+  .unlock-badge iconify-icon { font-size:10px; color:white; }
+
+  /* ====== LEADERBOARD (mobile) ====== */
+  .leaderboard-tabs { display:flex; gap:6px; margin-bottom:16px; }
+  .lb-tab {
+    padding:8px 16px; border-radius:10px; cursor:pointer; font-size:12px; font-weight:600;
+    color:var(--text-dim); background:rgba(255,255,255,0.03); transition:all 0.3s;
+    border:1px solid transparent; display:flex; align-items:center; gap:6px; flex:1; justify-content:center;
+  }
+  .lb-tab iconify-icon { font-size:16px; }
+  .lb-tab.active { background:rgba(16,185,129,0.08); color:var(--primary); border-color:rgba(16,185,129,0.15); }
+  .lb-podium { display:flex; align-items:flex-end; justify-content:center; gap:8px; margin-bottom:20px; padding:0 10px; }
+  .podium-card {
+    border-radius:var(--radius-sm); padding:16px 12px; text-align:center; overflow:hidden;
+    flex:1; max-width:130px;
+  }
+  .podium-card:nth-child(2) {
+    order:-1; border-color:rgba(245,158,11,0.2);
+    background:linear-gradient(180deg, rgba(245,158,11,0.06), var(--bg-card));
+    transform:translateY(-8px);
+  }
+  .podium-medal { margin-bottom:8px; }
+  .podium-medal iconify-icon { font-size:28px; }
+  .podium-card:nth-child(1) .podium-medal iconify-icon { color:#94A3B8; }
+  .podium-card:nth-child(2) .podium-medal iconify-icon { color:#F59E0B; filter:drop-shadow(0 2px 8px rgba(245,158,11,0.5)); }
+  .podium-card:nth-child(3) .podium-medal iconify-icon { color:#C2956C; }
+  .podium-avatar { width:52px; height:52px; border-radius:50%; margin:0 auto 8px; overflow:hidden; border:2px solid var(--border); }
+  .podium-avatar img { width:100%; height:100%; object-fit:cover; }
+  .podium-card:nth-child(2) .podium-avatar { width:60px; height:60px; border-color:var(--accent); box-shadow:0 0 16px rgba(245,158,11,0.2); }
+  .podium-name { font-size:13px; font-weight:700; margin-bottom:2px; }
+  .podium-points { font-size:12px; color:var(--accent); font-weight:700; }
+  .podium-level { font-size:10px; color:var(--text-muted); margin-top:2px; }
+  .lb-list { display:flex; flex-direction:column; gap:6px; }
+  .lb-row {
+    display:flex; align-items:center; gap:10px; padding:10px 14px;
+    border-radius:var(--radius-sm); position:relative; overflow:hidden;
+  }
+  .lb-row.me { border-color:rgba(16,185,129,0.2); background:rgba(16,185,129,0.04); }
+  .lb-rank { width:24px; font-size:14px; font-weight:700; text-align:center; color:var(--text-dim); }
+  .lb-avatar { width:36px; height:36px; border-radius:50%; overflow:hidden; border:2px solid var(--border); flex-shrink:0; }
+  .lb-avatar img { width:100%; height:100%; object-fit:cover; }
+  .lb-name { flex:1; font-weight:600; font-size:13px; }
+  .lb-level { font-size:10px; color:var(--text-muted); }
+  .lb-points { font-size:13px; font-weight:700; color:var(--accent); }
+
+  /* ====== REWARDS (mobile 2-col) ====== */
+  .rewards-balance {
+    position:relative; border-radius:var(--radius); overflow:hidden;
+    padding:20px; margin-bottom:20px;
+    background:var(--gradient-eco);
+    display:flex; align-items:center;
+  }
+  .rewards-balance-inner { position:relative; z-index:1; display:flex; justify-content:space-between; align-items:center; width:100%; }
+  .rewards-balance-label { font-size:12px; opacity:0.9; font-weight:500; }
+  .rewards-balance-value { font-family:'Space Grotesk'; font-size:36px; font-weight:800; }
+  .rewards-balance-icon iconify-icon { font-size:44px; opacity:0.6; }
+  .rewards-section-title { font-size:16px; font-weight:700; margin-bottom:12px; margin-top:20px; display:flex; align-items:center; gap:8px; }
+  .rewards-section-title iconify-icon { font-size:20px; }
+  .rewards-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  .reward-card { border-radius:var(--radius-sm); padding:14px; text-align:center; cursor:pointer; position:relative; overflow:hidden; }
+  .reward-card.nft { border-color:rgba(139,92,246,0.15); background:linear-gradient(180deg, rgba(139,92,246,0.04), var(--bg-card)); }
+  .reward-card.nft::after {
+    content:''; position:absolute; inset:0; pointer-events:none; opacity:0; transition:opacity 0.4s;
+    background:conic-gradient(from 0deg, rgba(139,92,246,0.08), rgba(236,72,153,0.06), rgba(245,158,11,0.06), rgba(16,185,129,0.06), rgba(59,130,246,0.08), rgba(139,92,246,0.08));
+    background-size:200% 200%; animation:holoShift 4s linear infinite;
+  }
+  @keyframes holoShift { 0%{background-position:0% 0%} 100%{background-position:200% 200%} }
+  .reward-art {
+    width:100%; height:100px; border-radius:12px; margin-bottom:10px;
+    overflow:hidden; position:relative;
+    background-size:cover; background-position:center;
+  }
+  .reward-art::after {
+    content:''; position:absolute; inset:0;
+    background:linear-gradient(180deg, transparent 50%, rgba(6,14,26,0.4));
+  }
+  .reward-name { font-size:13px; font-weight:700; margin-bottom:4px; }
+  .reward-desc { font-size:10px; color:var(--text-dim); margin-bottom:10px; line-height:1.4; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+  .reward-price {
+    display:inline-flex; align-items:center; gap:6px; padding:8px 16px; border-radius:10px;
+    font-size:12px; font-weight:700; cursor:pointer; transition:all 0.2s;
+    border:none; color:white; background:var(--gradient-eco); font-family:inherit;
+    position:relative; overflow:hidden;
+  }
+  .reward-price:active { transform:scale(0.95); }
+  .reward-price.nft-btn { background:var(--gradient-purple); }
+  .reward-price iconify-icon { font-size:14px; }
+  .reward-tag {
+    display:inline-flex; align-items:center; gap:3px; padding:3px 8px; border-radius:6px;
+    font-size:9px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:8px;
+  }
+  .tag-nft { background:rgba(139,92,246,0.1); color:#A78BFA; }
+  .tag-limited { background:rgba(245,158,11,0.1); color:var(--accent); animation:badgePulse 2s ease-in-out infinite; }
+  .tag-new { background:rgba(16,185,129,0.1); color:var(--primary); }
+  @keyframes badgePulse { 0%,100%{opacity:1} 50%{opacity:0.6} }
+
+  /* ====== COMBO POPUP ====== */
+  .combo-popup {
+    position:fixed; top:50%; left:50%; transform:translate(-50%,-50%) scale(0);
+    font-family:'Space Grotesk'; font-size:48px; font-weight:800;
+    background:var(--gradient-gold); -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+    z-index:500; pointer-events:none; white-space:nowrap;
+    filter:drop-shadow(0 0 20px rgba(245,158,11,0.5));
+  }
+  .combo-popup.show {
+    animation:comboIn 0.8s cubic-bezier(.175,.885,.32,1.275) forwards;
+  }
+  @keyframes comboIn {
+    0% { transform:translate(-50%,-50%) scale(0) rotate(-10deg); opacity:0; }
+    30% { transform:translate(-50%,-50%) scale(1.3) rotate(3deg); opacity:1; }
+    60% { transform:translate(-50%,-50%) scale(1) rotate(0deg); opacity:1; }
+    100% { transform:translate(-50%,-80%) scale(0.8) rotate(0deg); opacity:0; }
+  }
+
+  /* ====== TOAST (mobile centered) ====== */
+  .toast {
+    position:fixed; top:calc(var(--top-h) + 8px); left:50%; transform:translateX(-50%) translateY(-120%);
+    width:calc(100% - 32px); max-width:398px;
+    background:var(--bg-elevated); border:1px solid var(--primary);
+    border-radius:14px; padding:12px 16px;
+    display:flex; align-items:center; gap:10px; z-index:1000;
+    box-shadow:0 12px 40px rgba(0,0,0,0.5);
+    transition:transform 0.4s cubic-bezier(.25,.46,.45,.94), opacity 0.4s;
+    backdrop-filter:blur(24px);
+    opacity:0; pointer-events:none;
+  }
+  .toast.show { transform:translateX(-50%) translateY(0); opacity:1; pointer-events:auto; }
+  .toast-icon iconify-icon { font-size:22px; color:var(--primary); }
+  .toast-text { font-size:13px; font-weight:500; flex:1; }
+  .toast-pts { font-size:14px; font-weight:700; color:var(--accent); }
+  .toast-progress { position:absolute; bottom:0; left:0; height:3px; background:var(--gradient-eco); border-radius:0 0 14px 14px; }
+
+  /* ====== CONFETTI ====== */
+  .confetti-container { position:fixed; top:0; left:0; width:100vw; height:100vh; pointer-events:none; z-index:999; overflow:hidden; }
+  .confetti-piece { position:absolute; width:8px; height:8px; border-radius:2px; animation:confettiFall 2.5s ease-out forwards; }
+  @keyframes confettiFall {
+    0% { transform:translateY(-50px) rotate(0deg) scale(1); opacity:1; }
+    100% { transform:translateY(100vh) rotate(720deg) scale(0.4); opacity:0; }
+  }
+
+  /* ====== RIPPLE ====== */
+  .ripple {
+    position:absolute; border-radius:50%; background:rgba(255,255,255,0.2);
+    transform:scale(0); animation:rippleExpand 0.5s ease-out forwards; pointer-events:none;
+  }
+  @keyframes rippleExpand { to{transform:scale(3); opacity:0} }
+
+  /* ====== SHIMMER ====== */
+  @keyframes shimmer { 0%{transform:translateX(-100%)} 100%{transform:translateX(100%)} }
+
+  /* ====== BREATHE ====== */
+  @keyframes breathe {
+    0%,100% { transform:scale(1); }
+    50% { transform:scale(1.04); }
+  }
+
+  /* ====== STAGGERED ENTRANCE ====== */
+  .card-enter { opacity:0; transform:translateY(20px) scale(0.97); }
+  .card-enter-active {
+    animation:cardSlideIn 0.4s cubic-bezier(.34,1.56,.64,1) forwards;
+  }
+  @keyframes cardSlideIn {
+    from { opacity:0; transform:translateY(20px) scale(0.97); }
+    to { opacity:1; transform:translateY(0) scale(1); }
+  }
+
+  /* ====== BURST RING ====== */
+  .burst-ring {
+    position:absolute; top:50%; left:50%; width:0; height:0;
+    border:3px solid var(--primary); border-radius:50%;
+    transform:translate(-50%,-50%); opacity:1; pointer-events:none;
+    animation:burstExpand 0.5s ease-out forwards;
+  }
+  @keyframes burstExpand { to{width:150px; height:150px; opacity:0; border-width:1px} }
+
+  .count-up { display:inline-block; }
+
+  /* ====== CHART (mobile) ====== */
+  .chart-container { border-radius:var(--radius); padding:16px; margin-top:12px; }
+  .chart-title { font-size:14px; font-weight:700; margin-bottom:14px; display:flex; align-items:center; gap:6px; }
+  .chart-title iconify-icon { font-size:18px; color:var(--primary); }
+  .line-chart { position:relative; height:140px; display:flex; align-items:flex-end; gap:6px; padding-bottom:24px; }
+  .chart-bar-wrap { flex:1; display:flex; flex-direction:column; align-items:center; height:100%; justify-content:flex-end; }
+  .chart-bar {
+    width:100%; max-width:32px; border-radius:8px 8px 3px 3px;
+    background:var(--gradient-eco); transition:height 1.2s cubic-bezier(.25,.46,.45,.94);
+    position:relative; min-height:4px; cursor:pointer;
+  }
+  .chart-bar::after {
+    content:''; position:absolute; top:0; left:50%; transform:translateX(-50%);
+    width:60%; height:4px; border-radius:2px;
+    background:rgba(255,255,255,0.2); filter:blur(3px);
+  }
+  .chart-bar-label { font-size:9px; color:var(--text-muted); margin-top:6px; font-weight:500; }
+  .chart-bar-value {
+    position:absolute; top:-22px; left:50%; transform:translateX(-50%);
+    font-size:10px; font-weight:700; color:var(--primary);
+    background:var(--bg-elevated); padding:2px 6px; border-radius:6px;
+    white-space:nowrap; opacity:0; transition:opacity 0.2s; border:1px solid var(--border);
+  }
+  .donut-container { display:flex; align-items:center; gap:16px; }
+  .donut-svg { width:100px; height:100px; transform:rotate(-90deg); flex-shrink:0; }
+  .donut-legend { display:flex; flex-direction:column; gap:8px; flex:1; }
+  .legend-item { display:flex; align-items:center; gap:6px; font-size:11px; font-weight:500; }
+  .legend-dot { width:8px; height:8px; border-radius:3px; }
+  .legend-value { color:var(--text-dim); margin-left:auto; font-weight:700; font-size:11px; }
+
+  /* ====== HIDDEN DESKTOP ELEMENTS ====== */
+  .sidebar, .level-section, .progress-ring, .impact-hero, .impact-charts, .impact-equals { display:none !important; }
+</style>
+</head>
+<body>
+
+<!-- Aurora Background -->
+<div class="aurora">
+  <div class="aurora-band"></div>
+  <div class="aurora-band"></div>
+  <div class="aurora-band"></div>
+</div>
+
+<!-- Particle Network Canvas -->
+<canvas id="particleCanvas"></canvas>
+
+<!-- SVG Defs for gradients -->
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#059669"/>
+      <stop offset="50%" stop-color="#10B981"/>
+      <stop offset="100%" stop-color="#06B6D4"/>
+    </linearGradient>
+  </defs>
+</svg>
+
+<div class="toast" id="toast">
+  <span class="toast-icon"><iconify-icon icon="mdi:check-circle"></iconify-icon></span>
+  <span class="toast-text" id="toast-text">Quest Complete!</span>
+  <span class="toast-pts" id="toast-pts">+50</span>
+  <div class="toast-progress" id="toast-progress"></div>
+</div>
+
+<div class="confetti-container" id="confetti"></div>
+<div class="combo-popup" id="comboPopup"></div>
+
+<div class="app">
+  <!-- TOP STATUS BAR -->
+  <div class="top-bar">
+    <div class="top-bar-avatar">
+      <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop&crop=face&q=80" alt="Jenny" loading="lazy">
+      <div class="top-bar-avatar-ring"></div>
+    </div>
+    <div class="top-bar-level">Lv.12</div>
+    <div class="top-bar-xp-wrap">
+      <div class="top-bar-xp-text">2,850 / 3,200 XP</div>
+      <div class="top-bar-xp-bar"><div class="top-bar-xp-fill" id="topXpFill" style="width:0%" data-width="89%"></div></div>
+    </div>
+    <div class="top-bar-coins"><iconify-icon icon="mdi:star-four-points"></iconify-icon> 2,850</div>
+  </div>
+
+  <!-- BOTTOM TAB BAR -->
+  <nav class="bottom-tabs">
+    <div class="tab-item active" data-page="dashboard">
+      <div class="tab-glow"></div>
+      <iconify-icon icon="mdi:home"></iconify-icon>
+      <span>Home</span>
+    </div>
+    <div class="tab-item" data-page="challenges">
+      <div class="tab-glow"></div>
+      <iconify-icon icon="mdi:target"></iconify-icon>
+      <span>Quests</span>
+      <div class="tab-dot"></div>
+    </div>
+    <div class="tab-item" data-page="achievements">
+      <div class="tab-glow"></div>
+      <iconify-icon icon="mdi:trophy"></iconify-icon>
+      <span>Awards</span>
+    </div>
+    <div class="tab-item" data-page="leaderboard">
+      <div class="tab-glow"></div>
+      <iconify-icon icon="mdi:podium"></iconify-icon>
+      <span>Rank</span>
+    </div>
+    <div class="tab-item" data-page="rewards">
+      <div class="tab-glow"></div>
+      <iconify-icon icon="mdi:gift"></iconify-icon>
+      <span>Shop</span>
+    </div>
+  </nav>
+
+  <main class="main">
+
+    <!-- ====== DASHBOARD ====== -->
+    <div class="page active" id="page-dashboard">
+
+      <!-- Daily Check-in Strip -->
+      <div class="daily-checkin">
+        <div class="checkin-label">CHECK IN</div>
+        <div class="checkin-days">
+          <div class="checkin-day checked"><iconify-icon icon="mdi:check"></iconify-icon><span>M</span></div>
+          <div class="checkin-day checked"><iconify-icon icon="mdi:check"></iconify-icon><span>T</span></div>
+          <div class="checkin-day checked"><iconify-icon icon="mdi:check"></iconify-icon><span>W</span></div>
+          <div class="checkin-day checked"><iconify-icon icon="mdi:check"></iconify-icon><span>T</span></div>
+          <div class="checkin-day checked"><iconify-icon icon="mdi:check"></iconify-icon><span>F</span></div>
+          <div class="checkin-day checked"><iconify-icon icon="mdi:check"></iconify-icon><span>S</span></div>
+          <div class="checkin-day today" id="checkinToday" onclick="claimCheckin(this)"><iconify-icon icon="mdi:gift"></iconify-icon><span>S</span></div>
+        </div>
+      </div>
+
+      <!-- Hero Banner -->
+      <div class="hero-banner">
+        <div class="hero-banner-bg"></div>
+        <div class="hero-banner-overlay"></div>
+        <div class="hero-banner-content">
+          <div class="hero-greeting">
+            <h1>Hello, Jenny</h1>
+            <p>Streak <span class="streak-highlight"><span class="streak-flame"><svg viewBox="0 0 24 24" fill="none"><path d="M12 2C6.5 8.5 3 12.5 3 16a9 9 0 0018 0c0-3.5-3.5-7.5-9-14z" fill="#F59E0B"><animate attributeName="d" values="M12 2C6.5 8.5 3 12.5 3 16a9 9 0 0018 0c0-3.5-3.5-7.5-9-14z;M12 3C7 9 4 12.5 4 15.5a8 8 0 0016 0c0-3-3-6.5-8-12.5z;M12 2C6.5 8.5 3 12.5 3 16a9 9 0 0018 0c0-3.5-3.5-7.5-9-14z" dur="1s" repeatCount="indefinite"/></path><path d="M12 9c-2.5 3-4 5.5-4 7.5a4 4 0 008 0c0-2-1.5-4.5-4-7.5z" fill="#FBBF24"><animate attributeName="opacity" values="0.8;1;0.8" dur="0.7s" repeatCount="indefinite"/></path></svg></span> 12 days</span></p>
+          </div>
+          <!-- unDraw Day-Dreaming illustration, colors adapted to dark emerald theme -->
+          <svg class="hero-illustration" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 960 816.487" role="img">
+            <g transform="translate(-573.024 -241.313)">
+
+              <path d="M1096.313,704.626A181.812,181.812,0,0,0,802.847,561.139a196.734,196.734,0,0,0-336.3,68.92,146.721,146.721,0,1,0-97.477,256.377c2.28,0,4.546-.06,6.8-.162,2.328.1,4.667.162,7.02.162H933.641A159.493,159.493,0,0,0,1092.378,742.38a182.52,182.52,0,0,0,3.935-37.754Z" transform="translate(362.204 170.904)" fill="#059669" opacity="0.82"/>
+              <path d="M938.759,869.173H388.011c-2.2,0-4.5-.053-7.02-.162-2.391.109-4.614.162-6.8.162l-.006-.618v.618a147.34,147.34,0,1,1,97.177-258.085A197.339,197.339,0,0,1,808.049,542.41a182.491,182.491,0,0,1,290.06,182.183,159.966,159.966,0,0,1-159.35,144.581Zm-557.769-1.4h.027c2.515.109,4.8.162,6.994.162H938.759a158.736,158.736,0,0,0,158.122-143.5l0-.034.007-.034A181.2,181.2,0,0,0,808.345,543.745l-.464.361-.384-.444a196.1,196.1,0,0,0-335.243,68.7l-.289.907-.711-.632a146.115,146.115,0,1,0-97.066,255.3h.006c2.171,0,4.384-.053,6.767-.162Z" transform="translate(363.269 166.524)" fill="#022C1A"/>
+
+              <!-- Left arm body -->
+              <path d="M867.233,619.573l-19.9,40.567S811.358,655.548,825.9,703c0,0-3.827,35.975-11.481,43.629s6.123,58.172,33.678,43.629c15.5-8.18,16.468-17.572,14.349-24.223a60.018,60.018,0,0,1-1.862-30.769c2.766-12.948,7.747-29.509,16.6-43.747,17.6-28.32,34.444-55.875,34.444-55.875Z" transform="translate(501.884 200.861)" fill="#c9855e"/>
+              <!-- Dark jacket / body -->
+              <path d="M844.138,418.927s-43.629-10.716-58.172-3.062-57.406,8.42-57.406,8.42S692.585,482.457,701,512.308s43.629,48.221,43.629,48.221l118.64.766,19.135-78.073s-9.185-53.579-16.839-56.641S844.138,418.927,844.138,418.927Z" transform="translate(475.227 151.98)" fill="#0A1C12"/>
+              <!-- Head and face -->
+              <path d="M16.837,155.763,0,127.439S9.951,112.131,21.433,108.3c6.752-2.251,6.887-14.3,5.852-23.837A46.687,46.687,0,1,1,78.74,86.74q-.163,6.57.1,13.145c.765,12.246,13.011,8.419,13.011,8.419l13.009,9.188L91.852,153.464,74.244,170.306Z" transform="translate(1214.503 287.322)" fill="#c9855e"/>
+              <!-- Mint green top / shirt -->
+              <path d="M792.841,321.833l-44.394-40.567s-19.9,16.839-22.2,16.839-32.148,9.185-32.913,13.012,26.024,44.394,26.024,44.394-6.123,29.851,0,42.863,1.531,68.888,1.531,68.888,40.567-14.543,62-7.654,84.2,0,84.2,0,9.185-58.937,5.358-66.591-4.593-51.283-4.593-51.283l32.913-35.975s-6.889-27.555-32.913-29.086-42.1-3.062-42.1-3.062Z" transform="translate(473.711 118.954)" fill="#6EE7B7"/>
+              <!-- Extended left arm (dark) -->
+              <path d="M768.808,477.338S683.081,438.3,648.637,419.931s-87.258-3.827-70.418,37.505,110.986,81.9,110.986,81.9,30.617,22.963,48.987,22.2,44.777-.383,44.777-.383Z" transform="translate(445.695 151.742)" fill="#0A1C12"/>
+              <!-- Right body / arm (dark) -->
+              <path d="M846.393,469.182s153.849,1.531,143.9,58.937S921.4,681.2,910.688,683.5s-49.752-14.543-49.752-19.9,37.505-104.1,37.505-104.1l-91.85-28.32Z" transform="translate(500.527 165.256)" fill="#0A1C12"/>
+              <!-- Right arm skin -->
+              <path d="M882.626,330.55s9.185,88.023,4.593,101.8S866.553,483.633,845.886,502s-49.752,110.986-65.826,66.591,26.024-68.888,26.024-68.888l42.2-59.371.4-96.622Z" transform="translate(493.38 132.434)" fill="#c9855e"/>
+              <!-- Left hand skin -->
+              <path d="M726.85,479.7s75.776,26.79,84.2,22.963,26.79,9.95,26.79,9.95a65.983,65.983,0,0,1,49.752,9.185c24.493,16.074,29.851,34.444,24.493,35.209s-24.493-7.654-24.493-7.654-29.086-6.123-46.691-.765-40.549-5.938-40.549-5.938l-93.4-20.852Z" transform="translate(476.937 167.747)" fill="#c9855e"/>
+              <!-- Left leg skin -->
+              <path d="M693.334,357.895s.765,94.912,12.247,106.393,23.728,26.79,35.209,33.678,17.6,22.963,17.6,22.963S813.5,601.3,814.27,564.558s-28.32-65.826-28.32-65.826l-5.692-5.421a258.579,258.579,0,0,1-33.617-38.588,40.234,40.234,0,0,0-8.146-8.8c-9.95-7.654-12.247-91.85-12.247-91.85Z" transform="translate(473.714 138.002)" fill="#c9855e"/>
+              <!-- Right sleeve mint green -->
+              <path d="M853.332,292.178l16.074,9.185s6.123,40.567,9.185,45.925-37.505,19.135-43.629,15.308-9.185-41.333-9.185-41.333Z" transform="translate(505.07 123.35)" fill="#6EE7B7"/>
+              <!-- Left sleeve mint green -->
+              <path d="M706.158,303.318h-9.95s-10.716,11.481-9.951,35.975-9.185,39.8-3.062,42.1,52.048-9.185,52.048-9.185l-10.716-40.567Z" transform="translate(470.839 125.987)" fill="#6EE7B7"/>
+              <!-- Shadow overlay subtle -->
+              <path d="M650.078,430.192s46.69,19.9,59.7,22.963,55.067,38.888,55.067,38.888l-28.707,43.592s-29.422-3.642-45.5-6.7-111.751-66.591-95.677-77.307S650.078,430.192,650.078,430.192Z" transform="translate(449.996 156.025)" opacity="0.1"/>
+              <!-- Lower body dark -->
+              <path d="M642.341,430.192s46.691,19.9,59.7,22.963,64.3,38.271,64.3,38.271L741.08,540.412s-42.1-8.419-58.172-11.481-111.751-66.591-95.677-77.307S642.341,430.192,642.341,430.192Z" transform="translate(448.164 156.025)" fill="#0A1C12"/>
+              <!-- Ground line -->
+              <path d="M960,.737H0V-.5H960Z" transform="translate(573.024 1057.063)" fill="#022C1A"/>
+              <!-- Decorative plant -->
+              <path d="M69.746,138.263c-1.638-9.51,5.572-18.7,4.727-28.321-.753-8.477-7.437-14.991-13.11-21.336-4.1-4.579-8.014-10.223-8.9-16.051A42.163,42.163,0,0,0,32.2,64.97c-6.852-.643-14.085.525-19.7,4.5S3.252,80.54,4.555,87.3A15.839,15.839,0,0,1,7.847,62.5a25.848,25.848,0,0,1,5.5-24.383c5.858-6.463,29.607-5.35,38.157-3.657l-.663-1.127.018-.018c-1.256.733-2.956-.38-3.367-1.792a7.344,7.344,0,0,1,.526-4.291c.792-2.335,1.561-4.653,2.354-6.988C52.044,15.291,53.817,10.167,57.43,6.4,62.893.716,71.593-.736,79.409.318,89.444,1.676,99.353,7.1,104.022,16.1s2.676,21.54-5.76,27.153c12.03,13.787,16.213,29.153,15.55,47.421-.655,18.286-20.58,35.1-33.575,47.982a3.587,3.587,0,0,1-.309-.212A27.277,27.277,0,0,0,88.1,151.013a13.841,13.841,0,0,1-2.579.24C78.186,151.253,70.994,145.6,69.746,138.263Z" transform="translate(1219.443 241.313)" fill="#022C1A"/>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Stats 2x2 -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon-wrap"><iconify-icon icon="mdi:lightning-bolt"></iconify-icon></div>
+          <div class="stat-value count-up" data-target="2850">0</div>
+          <div class="stat-label">Total XP</div>
+          <div class="stat-change"><iconify-icon icon="mdi:trending-up"></iconify-icon> +120 this week</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon-wrap"><iconify-icon icon="mdi:fire"></iconify-icon></div>
+          <div class="stat-value count-up" data-target="12">0</div>
+          <div class="stat-label">Day Streak</div>
+          <div class="stat-change"><iconify-icon icon="mdi:trophy-outline"></iconify-icon> Best: 18 days</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon-wrap"><iconify-icon icon="mdi:medal-outline"></iconify-icon></div>
+          <div class="stat-value count-up" data-target="8">0</div>
+          <div class="stat-label">Unlocked</div>
+          <div class="stat-change">12 total awards</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon-wrap"><iconify-icon icon="mdi:leaf"></iconify-icon></div>
+          <div class="stat-value"><span class="count-up" data-target="46">0</span><small style="font-size:12px;opacity:0.5">kg</small></div>
+          <div class="stat-label">Carbon Cut</div>
+          <div class="stat-change"><iconify-icon icon="mdi:trending-up"></iconify-icon> +5.2kg</div>
+        </div>
+      </div>
+
+      <!-- Today's Tasks -->
+      <div class="dash-grid">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title"><iconify-icon icon="mdi:clipboard-check-outline"></iconify-icon> Today's Quests</div>
+            <div class="card-action" onclick="navigateTo('challenges')">See All <iconify-icon icon="mdi:chevron-right" style="font-size:16px"></iconify-icon></div>
+          </div>
+          <div class="task-preview">
+            <div class="task-mini" onclick="quickComplete(this, 'Bring Own Cup', 30)">
+              <div class="task-mini-icon" style="background:rgba(59,130,246,0.08)"><iconify-icon icon="mdi:cup-water" style="color:#3B82F6"></iconify-icon></div>
+              <div class="task-mini-name">Bring Own Cup</div>
+              <div class="task-mini-pts">+30</div>
+              <div class="task-mini-check"></div>
+            </div>
+            <div class="task-mini" onclick="quickComplete(this, 'Sort Recycling', 50)">
+              <div class="task-mini-icon" style="background:rgba(16,185,129,0.08)"><iconify-icon icon="mdi:recycle" style="color:#10B981"></iconify-icon></div>
+              <div class="task-mini-name">Sort Recycling</div>
+              <div class="task-mini-pts">+50</div>
+              <div class="task-mini-check"></div>
+            </div>
+            <div class="task-mini" onclick="quickComplete(this, 'Walk Instead', 40)">
+              <div class="task-mini-icon" style="background:rgba(139,92,246,0.08)"><iconify-icon icon="mdi:walk" style="color:#8B5CF6"></iconify-icon></div>
+              <div class="task-mini-name">Walk Instead</div>
+              <div class="task-mini-pts">+40</div>
+              <div class="task-mini-check"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Streak Card -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title"><iconify-icon icon="mdi:fire"></iconify-icon> Streak</div>
+          </div>
+          <div class="streak-display">
+            <div class="streak-number">
+              <svg viewBox="0 0 24 24" fill="none" width="36" height="36"><path d="M12 2C6.5 8.5 3 12.5 3 16a9 9 0 0018 0c0-3.5-3.5-7.5-9-14z" fill="#F59E0B"><animate attributeName="d" values="M12 2C6.5 8.5 3 12.5 3 16a9 9 0 0018 0c0-3.5-3.5-7.5-9-14z;M12 3C7 9 4 12.5 4 15.5a8 8 0 0016 0c0-3-3-6.5-8-12.5z;M12 2C6.5 8.5 3 12.5 3 16a9 9 0 0018 0c0-3.5-3.5-7.5-9-14z" dur="1s" repeatCount="indefinite"/></path><path d="M12 9c-2.5 3-4 5.5-4 7.5a4 4 0 008 0c0-2-1.5-4.5-4-7.5z" fill="#FBBF24"><animate attributeName="opacity" values="0.8;1;0.8" dur="0.7s" repeatCount="indefinite"/></path></svg>
+              12
+            </div>
+            <div class="streak-label">Consecutive Days</div>
+            <div class="streak-days">
+              <div class="streak-day active">M</div>
+              <div class="streak-day active">T</div>
+              <div class="streak-day active">W</div>
+              <div class="streak-day active">T</div>
+              <div class="streak-day active">F</div>
+              <div class="streak-day active">S</div>
+              <div class="streak-day today">S</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Impact Mini Card -->
+        <div class="impact-mini">
+          <div class="impact-mini-bg"></div>
+          <div class="impact-mini-inner">
+            <div class="impact-mini-title"><iconify-icon icon="mdi:earth"></iconify-icon> Your Eco Impact</div>
+            <div class="impact-mini-value count-up" data-target="46" data-spring="true">0</div>
+            <div class="impact-mini-unit">kg CO₂ Reduced</div>
+            <div class="impact-mini-stats">
+              <div class="impact-mini-stat"><iconify-icon icon="mdi:tree"></iconify-icon><div class="impact-mini-stat-val count-up" data-target="2.3">0</div><div class="impact-mini-stat-label">Trees' Worth</div></div>
+              <div class="impact-mini-stat"><iconify-icon icon="mdi:car-outline"></iconify-icon><div class="impact-mini-stat-val count-up" data-target="184">0</div><div class="impact-mini-stat-label">km Driving</div></div>
+              <div class="impact-mini-stat"><iconify-icon icon="mdi:water-outline"></iconify-icon><div class="impact-mini-stat-val count-up" data-target="920">0</div><div class="impact-mini-stat-label">L Water Saved</div></div>
+              <div class="impact-mini-stat"><iconify-icon icon="mdi:shopping-outline"></iconify-icon><div class="impact-mini-stat-val count-up" data-target="68">0</div><div class="impact-mini-stat-label">Bags Avoided</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ====== CHALLENGES ====== -->
+    <div class="page" id="page-challenges">
+      <div class="page-header">
+        <div class="page-title"><iconify-icon icon="mdi:target" style="color:var(--primary)"></iconify-icon> Daily Quests</div>
+        <div class="page-subtitle">Complete quests to earn XP</div>
+      </div>
+      <div class="challenge-progress-ring">
+        <svg width="72" height="72" viewBox="0 0 36 36" style="transform:rotate(-90deg)">
+          <circle cx="18" cy="18" r="14" fill="none" stroke="rgba(255,255,255,0.04)" stroke-width="3"/>
+          <circle cx="18" cy="18" r="14" fill="none" stroke="url(#ringGrad)" stroke-width="3" stroke-linecap="round" stroke-dasharray="88" stroke-dashoffset="88" id="challengeRing"/>
+        </svg>
+        <div style="font-size:12px;color:var(--text-dim);margin-top:6px"><span id="challengeCount" style="color:var(--primary);font-weight:700">0</span> / 6 Completed</div>
+      </div>
+      <div class="challenges-grid">
+        <div class="challenge-card" id="ch-1">
+          <div class="completed-check"><iconify-icon icon="mdi:check-bold"></iconify-icon></div>
+          <div class="challenge-icon-wrap"><iconify-icon icon="mdi:cup-water"></iconify-icon></div>
+          <div class="challenge-info">
+            <div class="challenge-name">Bring Own Cup</div>
+            <div class="challenge-desc">Skip single-use plastic cups</div>
+            <div class="challenge-meta">
+              <div class="challenge-reward"><iconify-icon icon="mdi:star-four-points"></iconify-icon> +30</div>
+              <div class="challenge-difficulty"><div class="diff-dot filled"></div><div class="diff-dot"></div><div class="diff-dot"></div></div>
+            </div>
+          </div>
+          <button class="challenge-btn" onclick="completeChallenge('ch-1','Bring Own Cup',30)"><iconify-icon icon="mdi:check"></iconify-icon></button>
+        </div>
+        <div class="challenge-card" id="ch-2">
+          <div class="completed-check"><iconify-icon icon="mdi:check-bold"></iconify-icon></div>
+          <div class="challenge-icon-wrap"><iconify-icon icon="mdi:recycle-variant"></iconify-icon></div>
+          <div class="challenge-info">
+            <div class="challenge-name">Sort Recycling</div>
+            <div class="challenge-desc">Put recyclables in the right bin</div>
+            <div class="challenge-meta">
+              <div class="challenge-reward"><iconify-icon icon="mdi:star-four-points"></iconify-icon> +50</div>
+              <div class="challenge-difficulty"><div class="diff-dot filled"></div><div class="diff-dot filled"></div><div class="diff-dot"></div></div>
+            </div>
+          </div>
+          <button class="challenge-btn" onclick="completeChallenge('ch-2','Sort Recycling',50)"><iconify-icon icon="mdi:check"></iconify-icon></button>
+        </div>
+        <div class="challenge-card" id="ch-3">
+          <div class="completed-check"><iconify-icon icon="mdi:check-bold"></iconify-icon></div>
+          <div class="challenge-icon-wrap"><iconify-icon icon="mdi:walk"></iconify-icon></div>
+          <div class="challenge-info">
+            <div class="challenge-name">Walk Instead</div>
+            <div class="challenge-desc">Walk instead of driving short trips</div>
+            <div class="challenge-meta">
+              <div class="challenge-reward"><iconify-icon icon="mdi:star-four-points"></iconify-icon> +40</div>
+              <div class="challenge-difficulty"><div class="diff-dot filled"></div><div class="diff-dot"></div><div class="diff-dot"></div></div>
+            </div>
+          </div>
+          <button class="challenge-btn" onclick="completeChallenge('ch-3','Walk Instead',40)"><iconify-icon icon="mdi:check"></iconify-icon></button>
+        </div>
+        <div class="challenge-card" id="ch-4">
+          <div class="completed-check"><iconify-icon icon="mdi:check-bold"></iconify-icon></div>
+          <div class="challenge-icon-wrap"><iconify-icon icon="mdi:food-apple-outline"></iconify-icon></div>
+          <div class="challenge-info">
+            <div class="challenge-name">Plant-Based Meal</div>
+            <div class="challenge-desc">Reduce livestock carbon emissions</div>
+            <div class="challenge-meta">
+              <div class="challenge-reward"><iconify-icon icon="mdi:star-four-points"></iconify-icon> +60</div>
+              <div class="challenge-difficulty"><div class="diff-dot filled"></div><div class="diff-dot filled"></div><div class="diff-dot"></div></div>
+            </div>
+          </div>
+          <button class="challenge-btn" onclick="completeChallenge('ch-4','Plant-Based Meal',60)"><iconify-icon icon="mdi:check"></iconify-icon></button>
+        </div>
+        <div class="challenge-card" id="ch-5">
+          <div class="completed-check"><iconify-icon icon="mdi:check-bold"></iconify-icon></div>
+          <div class="challenge-icon-wrap"><iconify-icon icon="mdi:shopping-outline"></iconify-icon></div>
+          <div class="challenge-info">
+            <div class="challenge-name">Thrift Shopping</div>
+            <div class="challenge-desc">Extend product lifecycle</div>
+            <div class="challenge-meta">
+              <div class="challenge-reward"><iconify-icon icon="mdi:star-four-points"></iconify-icon> +80</div>
+              <div class="challenge-difficulty"><div class="diff-dot filled"></div><div class="diff-dot filled"></div><div class="diff-dot filled"></div></div>
+            </div>
+          </div>
+          <button class="challenge-btn" onclick="completeChallenge('ch-5','Thrift Shopping',80)"><iconify-icon icon="mdi:check"></iconify-icon></button>
+        </div>
+        <div class="challenge-card" id="ch-6">
+          <div class="completed-check"><iconify-icon icon="mdi:check-bold"></iconify-icon></div>
+          <div class="challenge-icon-wrap"><iconify-icon icon="mdi:lightbulb-on-outline"></iconify-icon></div>
+          <div class="challenge-info">
+            <div class="challenge-name">Save Energy</div>
+            <div class="challenge-desc">Turn off unused lights &amp; appliances</div>
+            <div class="challenge-meta">
+              <div class="challenge-reward"><iconify-icon icon="mdi:star-four-points"></iconify-icon> +35</div>
+              <div class="challenge-difficulty"><div class="diff-dot filled"></div><div class="diff-dot"></div><div class="diff-dot"></div></div>
+            </div>
+          </div>
+          <button class="challenge-btn" onclick="completeChallenge('ch-6','Save Energy',35)"><iconify-icon icon="mdi:check"></iconify-icon></button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ====== ACHIEVEMENTS ====== -->
+    <div class="page" id="page-achievements">
+      <div class="page-header">
+        <div class="page-title"><iconify-icon icon="mdi:trophy" style="color:#F59E0B"></iconify-icon> Awards</div>
+        <div class="page-subtitle">Unlocked <strong style="color:var(--accent)">8 / 12</strong></div>
+      </div>
+      <div class="achievements-grid">
+        <div class="achievement-card unlocked"><span class="unlock-badge"><iconify-icon icon="mdi:check"></iconify-icon></span><div class="achievement-icon-wrap"><iconify-icon icon="mdi:sprout"></iconify-icon></div><div class="achievement-name">Eco Rookie</div><div class="achievement-desc">Complete first quest</div><div class="achievement-progress"><div class="achievement-progress-fill" style="width:100%"></div></div><div class="achievement-progress-text">1/1</div></div>
+        <div class="achievement-card unlocked"><span class="unlock-badge"><iconify-icon icon="mdi:check"></iconify-icon></span><div class="achievement-icon-wrap"><iconify-icon icon="mdi:cup-water"></iconify-icon></div><div class="achievement-name">Cup Hero</div><div class="achievement-desc">Bring own cup 10x</div><div class="achievement-progress"><div class="achievement-progress-fill" style="width:100%"></div></div><div class="achievement-progress-text">10/10</div></div>
+        <div class="achievement-card unlocked"><span class="unlock-badge"><iconify-icon icon="mdi:check"></iconify-icon></span><div class="achievement-icon-wrap"><iconify-icon icon="mdi:fire"></iconify-icon></div><div class="achievement-name">7-Day Streak</div><div class="achievement-desc">7 days in a row</div><div class="achievement-progress"><div class="achievement-progress-fill" style="width:100%"></div></div><div class="achievement-progress-text">7/7</div></div>
+        <div class="achievement-card unlocked"><span class="unlock-badge"><iconify-icon icon="mdi:check"></iconify-icon></span><div class="achievement-icon-wrap"><iconify-icon icon="mdi:recycle"></iconify-icon></div><div class="achievement-name">Sort Master</div><div class="achievement-desc">Recycle 50 times</div><div class="achievement-progress"><div class="achievement-progress-fill" style="width:100%"></div></div><div class="achievement-progress-text">50/50</div></div>
+        <div class="achievement-card unlocked"><span class="unlock-badge"><iconify-icon icon="mdi:check"></iconify-icon></span><div class="achievement-icon-wrap"><iconify-icon icon="mdi:bike"></iconify-icon></div><div class="achievement-name">Green Mover</div><div class="achievement-desc">Walk 100 km</div><div class="achievement-progress"><div class="achievement-progress-fill" style="width:100%"></div></div><div class="achievement-progress-text">100/100km</div></div>
+        <div class="achievement-card unlocked"><span class="unlock-badge"><iconify-icon icon="mdi:check"></iconify-icon></span><div class="achievement-icon-wrap"><iconify-icon icon="mdi:food-apple"></iconify-icon></div><div class="achievement-name">Plant Pioneer</div><div class="achievement-desc">20 plant meals</div><div class="achievement-progress"><div class="achievement-progress-fill" style="width:100%"></div></div><div class="achievement-progress-text">20/20</div></div>
+        <div class="achievement-card unlocked"><span class="unlock-badge"><iconify-icon icon="mdi:check"></iconify-icon></span><div class="achievement-icon-wrap"><iconify-icon icon="mdi:account-group"></iconify-icon></div><div class="achievement-name">Community Lead</div><div class="achievement-desc">Invite 5 friends</div><div class="achievement-progress"><div class="achievement-progress-fill" style="width:100%"></div></div><div class="achievement-progress-text">5/5</div></div>
+        <div class="achievement-card unlocked"><span class="unlock-badge"><iconify-icon icon="mdi:check"></iconify-icon></span><div class="achievement-icon-wrap"><iconify-icon icon="mdi:star-circle"></iconify-icon></div><div class="achievement-name">1K Club</div><div class="achievement-desc">Earn 1000 XP</div><div class="achievement-progress"><div class="achievement-progress-fill" style="width:100%"></div></div><div class="achievement-progress-text">1000/1000</div></div>
+        <div class="achievement-card locked"><div class="lock-overlay"><iconify-icon icon="mdi:lock-outline"></iconify-icon></div><div class="achievement-icon-wrap"><iconify-icon icon="mdi:earth"></iconify-icon></div><div class="achievement-name">Earth Guard</div><div class="achievement-desc">Cut 100 kg CO₂</div><div class="achievement-progress"><div class="achievement-progress-fill" data-width="46%" style="width:0%"></div></div><div class="achievement-progress-text">46/100</div></div>
+        <div class="achievement-card locked"><div class="lock-overlay"><iconify-icon icon="mdi:lock-outline"></iconify-icon></div><div class="achievement-icon-wrap"><iconify-icon icon="mdi:crown"></iconify-icon></div><div class="achievement-name">Rank King</div><div class="achievement-desc">Weekly #1</div><div class="achievement-progress"><div class="achievement-progress-fill" data-width="0%" style="width:0%"></div></div><div class="achievement-progress-text">#4</div></div>
+        <div class="achievement-card locked"><div class="lock-overlay"><iconify-icon icon="mdi:lock-outline"></iconify-icon></div><div class="achievement-icon-wrap"><iconify-icon icon="mdi:diamond-stone"></iconify-icon></div><div class="achievement-name">Iron Will</div><div class="achievement-desc">30-day streak</div><div class="achievement-progress"><div class="achievement-progress-fill" data-width="40%" style="width:0%"></div></div><div class="achievement-progress-text">12/30</div></div>
+        <div class="achievement-card locked"><div class="lock-overlay"><iconify-icon icon="mdi:lock-outline"></iconify-icon></div><div class="achievement-icon-wrap"><iconify-icon icon="mdi:shield-star"></iconify-icon></div><div class="achievement-name">Ultimate Hero</div><div class="achievement-desc">Unlock all awards</div><div class="achievement-progress"><div class="achievement-progress-fill" data-width="67%" style="width:0%"></div></div><div class="achievement-progress-text">8/12</div></div>
+      </div>
+    </div>
+
+    <!-- ====== LEADERBOARD ====== -->
+    <div class="page" id="page-leaderboard">
+      <div class="page-header">
+        <div class="page-title"><iconify-icon icon="mdi:podium-gold" style="color:#F59E0B"></iconify-icon> Leaderboard</div>
+        <div class="page-subtitle">Compete with eco champions</div>
+      </div>
+      <div class="leaderboard-tabs">
+        <div class="lb-tab active" onclick="switchLBTab(this)"><iconify-icon icon="mdi:calendar-week"></iconify-icon> Weekly</div>
+        <div class="lb-tab" onclick="switchLBTab(this)"><iconify-icon icon="mdi:calendar-month"></iconify-icon> Monthly</div>
+        <div class="lb-tab" onclick="switchLBTab(this)"><iconify-icon icon="mdi:trophy"></iconify-icon> All Time</div>
+      </div>
+      <div class="lb-podium">
+        <div class="podium-card">
+          <div class="podium-medal"><iconify-icon icon="mdi:medal"></iconify-icon></div>
+          <div class="podium-avatar"><img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face&q=80" alt="Andy" loading="lazy"></div>
+          <div class="podium-name">Andy</div>
+          <div class="podium-points">3,420</div>
+          <div class="podium-level">Lv.14</div>
+        </div>
+        <div class="podium-card">
+          <div class="podium-medal"><iconify-icon icon="mdi:medal"></iconify-icon></div>
+          <div class="podium-avatar"><img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face&q=80" alt="Michelle" loading="lazy"></div>
+          <div class="podium-name">Michelle</div>
+          <div class="podium-points">4,180</div>
+          <div class="podium-level">Lv.16</div>
+        </div>
+        <div class="podium-card">
+          <div class="podium-medal"><iconify-icon icon="mdi:medal"></iconify-icon></div>
+          <div class="podium-avatar"><img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&fit=crop&crop=face&q=80" alt="Kevin" loading="lazy"></div>
+          <div class="podium-name">Kevin</div>
+          <div class="podium-points">3,100</div>
+          <div class="podium-level">Lv.13</div>
+        </div>
+      </div>
+      <div class="lb-list">
+        <div class="lb-row me"><div class="lb-rank">4</div><div class="lb-avatar"><img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop&crop=face&q=80" alt="Jenny" loading="lazy"></div><div class="lb-name">Jenny (You)</div><div class="lb-level">Lv.12</div><div class="lb-points">2,850</div></div>
+        <div class="lb-row"><div class="lb-rank">5</div><div class="lb-avatar"><img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&h=100&fit=crop&crop=face&q=80" alt="Lisa" loading="lazy"></div><div class="lb-name">Lisa</div><div class="lb-level">Lv.11</div><div class="lb-points">2,640</div></div>
+        <div class="lb-row"><div class="lb-rank">6</div><div class="lb-avatar"><img src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=100&h=100&fit=crop&crop=face&q=80" alt="David" loading="lazy"></div><div class="lb-name">David</div><div class="lb-level">Lv.10</div><div class="lb-points">2,380</div></div>
+        <div class="lb-row"><div class="lb-rank">7</div><div class="lb-avatar"><img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=100&h=100&fit=crop&crop=face&q=80" alt="Sarah" loading="lazy"></div><div class="lb-name">Sarah</div><div class="lb-level">Lv.10</div><div class="lb-points">2,210</div></div>
+        <div class="lb-row"><div class="lb-rank">8</div><div class="lb-avatar"><img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face&q=80" alt="Tom" loading="lazy"></div><div class="lb-name">Tom</div><div class="lb-level">Lv.9</div><div class="lb-points">1,950</div></div>
+      </div>
+    </div>
+
+    <!-- ====== REWARDS ====== -->
+    <div class="page" id="page-rewards">
+      <div class="page-header">
+        <div class="page-title"><iconify-icon icon="mdi:gift" style="color:var(--primary)"></iconify-icon> Shop</div>
+        <div class="page-subtitle">Redeem points for rewards</div>
+      </div>
+      <div class="rewards-balance">
+        <div class="rewards-balance-inner">
+          <div><div class="rewards-balance-label">Available Points</div><div class="rewards-balance-value">2,850</div></div>
+          <div class="rewards-balance-icon"><iconify-icon icon="mdi:star-four-points-circle"></iconify-icon></div>
+        </div>
+      </div>
+      <div class="rewards-section-title"><iconify-icon icon="mdi:palette" style="color:#8B5CF6"></iconify-icon> NFT Collectibles</div>
+      <div class="rewards-grid">
+        <div class="reward-card nft"><div class="reward-tag tag-nft">NFT</div>
+          <div class="reward-art" style="background-image:url('https://images.unsplash.com/photo-1614730321146-b6fa6a46bcb4?w=400&h=260&fit=crop&q=80')"></div>
+          <div class="reward-name">Earth Guardian</div><div class="reward-desc">Limited digital collectible</div>
+          <button class="reward-price nft-btn" onclick="redeemReward(this,'Earth Guardian')"><iconify-icon icon="mdi:star-four-points"></iconify-icon> 500</button></div>
+        <div class="reward-card nft"><div class="reward-tag tag-limited">LIMITED</div>
+          <div class="reward-art" style="background-image:url('https://images.unsplash.com/photo-1522383225653-ed111181a951?w=400&h=260&fit=crop&q=80')"></div>
+          <div class="reward-name">Cherry Blossom</div><div class="reward-desc">Spring event exclusive</div>
+          <button class="reward-price nft-btn" onclick="redeemReward(this,'Cherry Blossom')"><iconify-icon icon="mdi:star-four-points"></iconify-icon> 800</button></div>
+        <div class="reward-card nft"><div class="reward-tag tag-nft">NFT</div>
+          <div class="reward-art" style="background-image:url('https://images.unsplash.com/photo-1505118380757-91f5f5632de0?w=400&h=260&fit=crop&q=80')"></div>
+          <div class="reward-name">Butterfly Effect</div><div class="reward-desc">Animated digital art</div>
+          <button class="reward-price nft-btn" onclick="redeemReward(this,'Butterfly Effect')"><iconify-icon icon="mdi:star-four-points"></iconify-icon> 1200</button></div>
+      </div>
+      <div class="rewards-section-title"><iconify-icon icon="mdi:gift-outline" style="color:var(--primary)"></iconify-icon> Physical Rewards</div>
+      <div class="rewards-grid">
+        <div class="reward-card"><div class="reward-tag tag-new">NEW</div>
+          <div class="reward-art" style="background-image:url('https://images.unsplash.com/photo-1572490122747-3968b75cc699?w=400&h=260&fit=crop&q=80')"></div>
+          <div class="reward-name">Eco Travel Cup</div><div class="reward-desc">Foldable silicone cup</div>
+          <button class="reward-price" onclick="redeemReward(this,'Eco Travel Cup')"><iconify-icon icon="mdi:star-four-points"></iconify-icon> 300</button></div>
+        <div class="reward-card">
+          <div class="reward-art" style="background-image:url('https://images.unsplash.com/photo-1591085686350-798c0f9faa7f?w=400&h=260&fit=crop&q=80')"></div>
+          <div class="reward-name">Organic Tote Bag</div><div class="reward-desc">100% organic cotton</div>
+          <button class="reward-price" onclick="redeemReward(this,'Organic Tote Bag')"><iconify-icon icon="mdi:star-four-points"></iconify-icon> 200</button></div>
+        <div class="reward-card">
+          <div class="reward-art" style="background-image:url('https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=400&h=260&fit=crop&q=80')"></div>
+          <div class="reward-name">Coffee Voucher</div><div class="reward-desc">$5 off with own cup</div>
+          <button class="reward-price" onclick="redeemReward(this,'Coffee Voucher')"><iconify-icon icon="mdi:star-four-points"></iconify-icon> 150</button></div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+/* ====== STATE ====== */
+const tabs = document.querySelectorAll('.tab-item');
+const pages = document.querySelectorAll('.page');
+let challengesDone = 0;
+let comboCount = 0;
+let comboTimer = null;
+let currentPage = 'dashboard';
+const pageOrder = ['dashboard','challenges','achievements','leaderboard','rewards'];
+
+/* ====== MOBILE TAB NAVIGATION ====== */
+function navigateTo(pageId) {
+  if (pageId === currentPage) return;
+  const oldIdx = pageOrder.indexOf(currentPage);
+  const newIdx = pageOrder.indexOf(pageId);
+  tabs.forEach(t => t.classList.remove('active'));
+  const tab = document.querySelector(`.tab-item[data-page="${pageId}"]`);
+  if (tab) tab.classList.add('active');
+
+  pages.forEach(p => {
+    if (p.classList.contains('active')) {
+      p.style.animation = 'none';
+      p.classList.remove('active');
+    }
+  });
+
+  const page = document.getElementById(`page-${pageId}`);
+  if (page) {
+    page.classList.add('active');
+    page.style.animation = 'none';
+    page.offsetHeight; // force reflow
+    page.style.animation = 'pageIn 0.3s cubic-bezier(.25,.46,.45,.94) forwards';
+    staggerEntrance(page);
+    animatePageElements(page);
+  }
+  currentPage = pageId;
+}
+
+tabs.forEach(item => item.addEventListener('click', () => navigateTo(item.dataset.page)));
+
+/* ====== STAGGERED ENTRANCE ====== */
+function staggerEntrance(page) {
+  const cards = page.querySelectorAll('.stat-card,.challenge-card,.achievement-card,.reward-card,.card,.chart-container,.podium-card,.lb-row,.hero-banner,.rewards-balance,.challenge-progress-ring,.daily-checkin,.impact-mini');
+  cards.forEach((c, i) => {
+    c.classList.remove('card-enter-active');
+    c.classList.add('card-enter');
+    setTimeout(() => { c.classList.remove('card-enter'); c.classList.add('card-enter-active'); }, 50 * i);
+  });
+}
+
+/* ====== COUNTERS (spring + ease) ====== */
+function easeOutCubic(t) { return 1 - Math.pow(1 - t, 3); }
+
+function animateCounter(el, target, spring) {
+  const dur = 1400, start = performance.now();
+  const isFloat = String(target).includes('.');
+  function tick(now) {
+    let t = Math.min((now - start) / dur, 1);
+    let val;
+    if (spring && t < 1) {
+      const ease = easeOutCubic(t);
+      val = target * ease * (1 + 0.1 * Math.sin(t * Math.PI * 3) * (1 - t));
+    } else {
+      val = target * easeOutCubic(t);
+    }
+    if (t >= 1) val = target;
+    el.textContent = isFloat ? val.toFixed(1) : Math.floor(val).toLocaleString();
+    if (t < 1) requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+}
+
+function animatePageElements(page) {
+  page.querySelectorAll('.count-up').forEach(el => {
+    const raw = el.dataset.target;
+    if (!raw) return;
+    const target = parseFloat(raw);
+    const spring = el.dataset.spring === 'true';
+    setTimeout(() => animateCounter(el, target, spring), 250);
+  });
+  page.querySelectorAll('[data-width]').forEach(bar => {
+    bar.style.width = '0%';
+    setTimeout(() => { bar.style.width = bar.dataset.width; }, 350);
+  });
+}
+
+/* ====== TOAST ====== */
+function showToast(text, pts) {
+  const toast = document.getElementById('toast');
+  const prog = document.getElementById('toast-progress');
+  document.getElementById('toast-text').textContent = text;
+  document.getElementById('toast-pts').textContent = pts > 0 ? ('+' + pts) : '';
+  prog.style.transition = 'none'; prog.style.width = '100%';
+  toast.classList.add('show');
+  requestAnimationFrame(() => {
+    prog.style.transition = 'width 2.2s linear'; prog.style.width = '0%';
+  });
+  setTimeout(() => toast.classList.remove('show'), 2500);
+}
+
+/* ====== CONFETTI (more dense for mobile) ====== */
+function launchConfetti() {
+  const c = document.getElementById('confetti');
+  const colors = ['#10B981','#3B82F6','#F59E0B','#EC4899','#8B5CF6','#06B6D4'];
+  for (let i = 0; i < 45; i++) {
+    const p = document.createElement('div'); p.className = 'confetti-piece';
+    p.style.left = (20 + Math.random()*60)+'vw';
+    p.style.background = colors[Math.floor(Math.random()*colors.length)];
+    p.style.animationDelay = Math.random()*0.4+'s';
+    p.style.animationDuration = (1.5+Math.random()*1.5)+'s';
+    const sz = (5+Math.random()*7)+'px'; p.style.width = sz; p.style.height = sz;
+    p.style.borderRadius = Math.random()>0.5?'50%':'2px';
+    c.appendChild(p);
+    setTimeout(() => p.remove(), 3000);
+  }
+}
+
+/* ====== COMBO SYSTEM ====== */
+function showCombo() {
+  comboCount++;
+  if (comboCount < 2) return;
+  const popup = document.getElementById('comboPopup');
+  popup.textContent = `x${comboCount} COMBO!`;
+  popup.classList.remove('show');
+  popup.offsetHeight;
+  popup.classList.add('show');
+  setTimeout(() => popup.classList.remove('show'), 800);
+}
+
+function resetComboTimer() {
+  clearTimeout(comboTimer);
+  comboTimer = setTimeout(() => { comboCount = 0; }, 5000);
+}
+
+/* ====== XP BAR FLASH ====== */
+function flashXpBar() {
+  const fill = document.getElementById('topXpFill');
+  if (!fill) return;
+  fill.style.filter = 'brightness(1.8)';
+  setTimeout(() => { fill.style.filter = ''; }, 600);
+}
+
+/* ====== BURST RING ====== */
+function burstRing(card) {
+  const ring = document.createElement('div'); ring.className = 'burst-ring';
+  card.appendChild(ring);
+  setTimeout(() => ring.remove(), 600);
+}
+
+/* ====== CHALLENGE COMPLETION ====== */
+function updateChallengeRing() {
+  challengesDone++;
+  const el = document.getElementById('challengeCount');
+  if (el) el.textContent = challengesDone;
+  const ring = document.getElementById('challengeRing');
+  if (ring) {
+    const offset = 88 - (88 * challengesDone / 6);
+    ring.setAttribute('stroke-dashoffset', offset);
+  }
+}
+
+function completeChallenge(id, name, pts) {
+  const card = document.getElementById(id);
+  if (card.classList.contains('completed')) return;
+  card.classList.add('completed');
+  const btn = card.querySelector('.challenge-btn');
+  btn.innerHTML = '<iconify-icon icon="mdi:check-circle"></iconify-icon>';
+  btn.classList.add('done');
+  btn.innerHTML = 'Done';
+  burstRing(card);
+  showToast(`${name} done!`, pts);
+  launchConfetti();
+  updateChallengeRing();
+  showCombo();
+  resetComboTimer();
+  flashXpBar();
+}
+
+function quickComplete(el, name, pts) {
+  const check = el.querySelector('.task-mini-check');
+  if (check.classList.contains('done')) return;
+  check.classList.add('done');
+  check.innerHTML = '<iconify-icon icon="mdi:check" style="font-size:14px;color:white"></iconify-icon>';
+  showToast(`${name} done!`, pts);
+  launchConfetti();
+  showCombo();
+  resetComboTimer();
+  flashXpBar();
+}
+
+/* ====== DAILY CHECK-IN ====== */
+function claimCheckin(el) {
+  if (el.classList.contains('checked')) return;
+  el.classList.remove('today');
+  el.classList.add('checked');
+  el.innerHTML = '<iconify-icon icon="mdi:check"></iconify-icon><span>S</span>';
+  showToast('Checked in! Daily reward', 20);
+  launchConfetti();
+  flashXpBar();
+  // Bounce animation
+  el.style.transform = 'scale(1.3)';
+  setTimeout(() => { el.style.transform = 'scale(1)'; }, 300);
+}
+
+/* ====== REWARDS ====== */
+function redeemReward(btn, name) {
+  if (btn.classList.contains('redeemed')) return;
+  btn.classList.add('redeemed');
+  btn.innerHTML = '<iconify-icon icon="mdi:check-circle"></iconify-icon> Redeemed';
+  btn.style.background = 'rgba(16,185,129,0.1)'; btn.style.color = 'var(--primary)';
+  showToast(`${name} redeemed!`, 0);
+  launchConfetti();
+}
+
+function switchLBTab(el) {
+  document.querySelectorAll('.lb-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+}
+
+/* ====== RIPPLE EFFECT (touch-friendly) ====== */
+function initRipple() {
+  document.querySelectorAll('.challenge-btn, .reward-price, .tab-item').forEach(btn => {
+    const handler = function(e) {
+      const r = this.getBoundingClientRect();
+      const sp = document.createElement('span'); sp.className = 'ripple';
+      const sz = Math.max(r.width, r.height) * 2;
+      sp.style.width = sp.style.height = sz + 'px';
+      const cx = e.touches ? e.touches[0].clientX : e.clientX;
+      const cy = e.touches ? e.touches[0].clientY : e.clientY;
+      sp.style.left = (cx - r.left - sz/2) + 'px';
+      sp.style.top = (cy - r.top - sz/2) + 'px';
+      this.appendChild(sp);
+      setTimeout(() => sp.remove(), 500);
+    };
+    btn.addEventListener('click', handler);
+  });
+}
+
+/* ====== PARTICLE NETWORK (lighter for mobile) ====== */
+function initParticleNetwork() {
+  const canvas = document.getElementById('particleCanvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  let w, h, particles = [];
+  const COUNT = 18, CONNECT_DIST = 100;
+
+  function resize() { w = canvas.width = window.innerWidth; h = canvas.height = window.innerHeight; }
+  resize(); window.addEventListener('resize', resize);
+
+  for (let i = 0; i < COUNT; i++) {
+    particles.push({
+      x: Math.random() * w, y: Math.random() * h,
+      vx: (Math.random() - 0.5) * 0.3, vy: (Math.random() - 0.5) * 0.3,
+      r: 1.2 + Math.random() * 1.2
+    });
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, w, h);
+    particles.forEach(p => {
+      p.x += p.vx; p.y += p.vy;
+      if (p.x < 0) p.x = w; if (p.x > w) p.x = 0;
+      if (p.y < 0) p.y = h; if (p.y > h) p.y = 0;
+      ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI*2);
+      ctx.fillStyle = 'rgba(16,185,129,0.2)'; ctx.fill();
+    });
+    for (let i = 0; i < particles.length; i++) {
+      for (let j = i+1; j < particles.length; j++) {
+        const dx = particles[i].x - particles[j].x, dy = particles[i].y - particles[j].y;
+        const d = Math.sqrt(dx*dx + dy*dy);
+        if (d < CONNECT_DIST) {
+          ctx.beginPath();
+          ctx.moveTo(particles[i].x, particles[i].y);
+          ctx.lineTo(particles[j].x, particles[j].y);
+          ctx.strokeStyle = `rgba(16,185,129,${0.08 * (1 - d/CONNECT_DIST)})`;
+          ctx.lineWidth = 0.5; ctx.stroke();
+        }
+      }
+    }
+    requestAnimationFrame(draw);
+  }
+  draw();
+}
+
+/* ====== INIT ====== */
+window.addEventListener('DOMContentLoaded', () => {
+  initParticleNetwork();
+  initRipple();
+
+  // Animate top XP bar
+  const topXp = document.getElementById('topXpFill');
+  if (topXp) setTimeout(() => { topXp.style.width = topXp.dataset.width; }, 400);
+
+  // Dashboard entrance
+  const dash = document.getElementById('page-dashboard');
+  setTimeout(() => { staggerEntrance(dash); animatePageElements(dash); }, 200);
+
+  // Challenge ring transition
+  const s = document.createElement('style');
+  s.textContent = '#challengeRing{transition:stroke-dashoffset 0.6s cubic-bezier(.25,.46,.45,.94)}';
+  document.head.appendChild(s);
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,3414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1920">
+<title>EcoLoop — UX/UI Case Study Portfolio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   DESIGN TOKENS
+   ============================================================ */
+:root {
+  --c-bg: #060B11;
+  --c-bg-2: #0A1118;
+  --c-bg-3: #0E1820;
+  --c-surface: rgba(16, 30, 46, 0.55);
+  --c-surface-hover: rgba(22, 40, 60, 0.65);
+  --c-border: rgba(255,255,255,0.06);
+  --c-border-accent: rgba(0,255,170,0.15);
+  --c-text: #E8EDF2;
+  --c-text-dim: #8B9DB5;
+  --c-text-muted: #4A607A;
+  --c-accent: #00FFAA;
+  --c-accent-2: #00D4FF;
+  --c-accent-3: #A78BFA;
+  --c-accent-warm: #FFB347;
+  --c-danger: #FF6B6B;
+  --c-eco-1: #10B981;
+  --c-eco-2: #059669;
+  --g-accent: linear-gradient(135deg, #00FFAA 0%, #00D4FF 100%);
+  --g-hero: linear-gradient(135deg, #0A2A1A 0%, #061520 40%, #0A0A1A 100%);
+  --g-card: linear-gradient(160deg, rgba(16,30,46,0.7) 0%, rgba(8,15,25,0.9) 100%);
+  --g-warm: linear-gradient(135deg, #FFB347 0%, #FF6B6B 100%);
+  --g-purple: linear-gradient(135deg, #A78BFA 0%, #818CF8 100%);
+  --f-display: 'Syne', sans-serif;
+  --f-body: 'DM Sans', sans-serif;
+  --f-mono: 'JetBrains Mono', monospace;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ============================================================
+   RESET & BASE
+   ============================================================ */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { overflow-x: hidden; }
+body {
+  font-family: var(--f-body);
+  background: #111;
+  color: var(--c-text);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+  line-height: 1.6;
+}
+img { max-width: 100%; display: block; object-fit: cover; }
+a { color: inherit; text-decoration: none; }
+
+/* ============================================================
+   PAGE SYSTEM — 1920 x 1080 per page (16:9)
+   ============================================================ */
+.page {
+  width: 1920px;
+  height: 1080px;
+  position: relative;
+  overflow: hidden;
+  margin: 0 auto 40px;
+  background: var(--c-bg);
+  flex-shrink: 0;
+}
+
+/* Page number badge */
+.page-num {
+  position: absolute;
+  bottom: 32px;
+  right: 48px;
+  font-family: var(--f-mono);
+  font-size: 12px;
+  color: var(--c-text-muted);
+  letter-spacing: 2px;
+  z-index: 10;
+}
+
+/* Noise overlay per page */
+.page::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 50;
+  opacity: 0.03;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* ============================================================
+   SHARED — Section headers, cards, layout
+   ============================================================ */
+.page-inner {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+  padding: 72px 96px;
+  display: flex;
+  flex-direction: column;
+}
+.section-tag {
+  font-family: var(--f-mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--c-accent);
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.section-tag::before {
+  content: '';
+  width: 32px;
+  height: 1px;
+  background: var(--c-accent);
+}
+.section-title {
+  font-family: var(--f-display);
+  font-size: 52px;
+  font-weight: 800;
+  letter-spacing: -2px;
+  line-height: 1.1;
+  color: #fff;
+  margin-bottom: 16px;
+}
+.section-desc {
+  font-size: 17px;
+  color: var(--c-text-dim);
+  max-width: 640px;
+  line-height: 1.7;
+}
+
+/* Glass card base */
+.glass-card {
+  padding: 32px;
+  border-radius: 20px;
+  border: 1px solid var(--c-border);
+  background: var(--g-card);
+  backdrop-filter: blur(20px);
+}
+
+/* ============================================================
+   ENRICHED RESEARCH COMPONENTS — Pages 2-5
+   ============================================================ */
+
+/* Insight callout with source */
+.insight-callout {
+  padding: 20px 24px;
+  border-radius: 16px;
+  background: rgba(0,255,170,0.04);
+  border: 1px solid rgba(0,255,170,0.1);
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
+.insight-callout .insight-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: rgba(0,255,170,0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.insight-callout .insight-icon img { width: 22px; height: 22px; }
+.insight-callout .insight-text {
+  font-size: 14px;
+  color: var(--c-text-dim);
+  line-height: 1.7;
+}
+.insight-callout .insight-text strong { color: #fff; }
+.source-tag {
+  display: inline-block;
+  font-family: var(--f-mono);
+  font-size: 9px;
+  color: var(--c-accent);
+  letter-spacing: 1px;
+  opacity: 0.7;
+  margin-top: 4px;
+}
+
+/* Data bar visualization */
+.data-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 14px;
+}
+.data-bar-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.data-bar-label {
+  font-size: 12px;
+  color: var(--c-text-dim);
+  width: 140px;
+  flex-shrink: 0;
+  text-align: right;
+}
+.data-bar-track {
+  flex: 1;
+  height: 24px;
+  background: rgba(255,255,255,0.04);
+  border-radius: 6px;
+  overflow: hidden;
+  position: relative;
+}
+.data-bar-fill {
+  height: 100%;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  padding-left: 12px;
+  font-family: var(--f-mono);
+  font-size: 11px;
+  font-weight: 700;
+  color: #fff;
+}
+
+/* Photo panel with caption */
+.photo-panel {
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid var(--c-border);
+  position: relative;
+}
+.photo-panel img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.photo-panel .photo-caption {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 12px 16px;
+  background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+  font-family: var(--f-mono);
+  font-size: 10px;
+  color: var(--c-text-dim);
+  letter-spacing: 1px;
+}
+
+/* Market growth mini chart */
+.market-growth {
+  padding: 24px;
+  border-radius: 16px;
+  background: var(--g-card);
+  border: 1px solid var(--c-border);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.market-growth .mg-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.market-growth .mg-title {
+  font-family: var(--f-display);
+  font-size: 16px;
+  font-weight: 700;
+  color: #fff;
+}
+.market-growth .mg-source {
+  font-family: var(--f-mono);
+  font-size: 9px;
+  color: var(--c-text-muted);
+  letter-spacing: 1px;
+}
+.mg-visual {
+  display: flex;
+  align-items: flex-end;
+  gap: 3px;
+  height: 80px;
+}
+.mg-bar {
+  flex: 1;
+  border-radius: 4px 4px 0 0;
+  background: rgba(0,255,170,0.15);
+  position: relative;
+  min-width: 20px;
+}
+.mg-bar.highlight {
+  background: linear-gradient(to top, rgba(0,255,170,0.2), rgba(0,255,170,0.5));
+}
+.mg-bar-label {
+  position: absolute;
+  bottom: -18px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--f-mono);
+  font-size: 8px;
+  color: var(--c-text-muted);
+  white-space: nowrap;
+}
+.mg-bar-val {
+  position: absolute;
+  top: -16px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--f-mono);
+  font-size: 9px;
+  color: var(--c-accent);
+  white-space: nowrap;
+  font-weight: 700;
+}
+.mg-row {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 16px;
+}
+.mg-stat {
+  text-align: center;
+}
+.mg-stat-num {
+  font-family: var(--f-display);
+  font-size: 24px;
+  font-weight: 800;
+  background: var(--g-accent);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.mg-stat-label {
+  font-size: 11px;
+  color: var(--c-text-muted);
+  margin-top: 2px;
+}
+
+/* Behavioral case card */
+.case-card {
+  padding: 18px 20px;
+  border-radius: 14px;
+  background: rgba(16,30,46,0.5);
+  border: 1px solid var(--c-border);
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+}
+.case-card .case-stat {
+  font-family: var(--f-display);
+  font-size: 28px;
+  font-weight: 800;
+  line-height: 1;
+  flex-shrink: 0;
+  min-width: 60px;
+}
+.case-card .case-stat.green { color: var(--c-accent); }
+.case-card .case-stat.blue { color: var(--c-accent-2); }
+.case-card .case-stat.purple { color: var(--c-accent-3); }
+.case-card .case-stat.warm { color: var(--c-accent-warm); }
+.case-card .case-info { }
+.case-card .case-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff;
+  margin-bottom: 3px;
+}
+.case-card .case-desc {
+  font-size: 12px;
+  color: var(--c-text-muted);
+  line-height: 1.5;
+}
+
+/* Research photo grid */
+.research-photo-grid {
+  display: grid;
+  gap: 12px;
+}
+.research-photo-grid.two-col {
+  grid-template-columns: 1fr 1fr;
+}
+
+/* Key finding pill */
+.finding-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: 100px;
+  background: rgba(0,255,170,0.06);
+  border: 1px solid rgba(0,255,170,0.1);
+  font-size: 12px;
+  color: var(--c-text-dim);
+}
+.finding-pill .pill-num {
+  font-family: var(--f-mono);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--c-accent);
+}
+
+/* Persona behavior tag */
+.persona-behavior-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 6px;
+}
+.persona-behavior-tag {
+  font-size: 10px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  background: rgba(0,212,255,0.06);
+  border: 1px solid rgba(0,212,255,0.1);
+  color: var(--c-accent-2);
+  font-family: var(--f-mono);
+}
+
+/* Journey map design pattern refs */
+.j-design-ref {
+  margin-top: 6px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  background: rgba(167,139,250,0.06);
+  border: 1px solid rgba(167,139,250,0.08);
+  font-size: 10px;
+  color: var(--c-accent-3);
+  font-family: var(--f-mono);
+}
+
+/* Survey result compact */
+.survey-results {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.survey-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.survey-label {
+  font-size: 11px;
+  color: var(--c-text-dim);
+  width: 180px;
+  flex-shrink: 0;
+}
+.survey-bar {
+  flex: 1;
+  height: 20px;
+  background: rgba(255,255,255,0.04);
+  border-radius: 4px;
+  overflow: hidden;
+}
+.survey-fill {
+  height: 100%;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 8px;
+  font-family: var(--f-mono);
+  font-size: 10px;
+  font-weight: 700;
+  color: #fff;
+}
+
+/* Icon container */
+.icon-box {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.icon-box img {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+}
+.icon-box--lg {
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+}
+.icon-box--lg img {
+  width: 36px;
+  height: 36px;
+}
+
+/* Mesh BG helper */
+.mesh-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+}
+.mesh-blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+}
+
+/* ============================================================
+   PAGE 1 — COVER / HERO
+   ============================================================ */
+.page--hero {
+  background: var(--g-hero);
+}
+.page--hero .hero-grid-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background-image:
+    linear-gradient(rgba(0,255,170,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,255,170,0.03) 1px, transparent 1px);
+  background-size: 80px 80px;
+  mask-image: radial-gradient(ellipse 70% 70% at 50% 50%, black 20%, transparent 80%);
+}
+.hero-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px;
+  align-items: center;
+  flex: 1;
+}
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--f-mono);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--c-accent);
+  background: rgba(0,255,170,0.06);
+  border: 1px solid rgba(0,255,170,0.15);
+  border-radius: 100px;
+  padding: 10px 24px;
+  width: fit-content;
+  backdrop-filter: blur(10px);
+  margin-bottom: 24px;
+}
+.hero-badge-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--c-accent);
+  box-shadow: 0 0 12px rgba(0,255,170,0.6);
+}
+.hero-title {
+  font-family: var(--f-display);
+  font-size: 110px;
+  font-weight: 800;
+  line-height: 0.95;
+  letter-spacing: -4px;
+  background: linear-gradient(135deg, #fff 30%, var(--c-accent) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 20px;
+}
+.hero-subtitle {
+  font-family: var(--f-display);
+  font-size: 28px;
+  font-weight: 500;
+  color: var(--c-text-dim);
+  letter-spacing: -0.5px;
+  line-height: 1.3;
+  margin-bottom: 40px;
+}
+.hero-meta-row {
+  display: flex;
+  gap: 48px;
+  padding-top: 24px;
+  border-top: 1px solid var(--c-border);
+}
+.hero-meta-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.hero-meta-label {
+  font-family: var(--f-mono);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--c-accent);
+}
+.hero-meta-val {
+  font-size: 15px;
+  color: var(--c-text-dim);
+}
+
+/* Hero phone */
+.hero-visual {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+.hero-phone {
+  width: 280px;
+  aspect-ratio: 9/19.5;
+  border-radius: 36px;
+  border: 2px solid rgba(255,255,255,0.08);
+  background: var(--c-bg-3);
+  overflow: hidden;
+  box-shadow:
+    0 40px 100px -20px rgba(0,0,0,0.6),
+    0 0 60px rgba(0,255,170,0.1),
+    inset 0 1px 0 rgba(255,255,255,0.05);
+  transform: perspective(1200px) rotateY(-8deg) rotateX(4deg);
+  position: relative;
+  z-index: 2;
+}
+.hero-phone-glow {
+  position: absolute;
+  width: 500px;
+  height: 500px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(circle, rgba(0,255,170,0.12) 0%, transparent 70%);
+  border-radius: 50%;
+  z-index: 0;
+}
+.hero-float {
+  position: absolute;
+  padding: 14px 22px;
+  background: var(--g-card);
+  border: 1px solid var(--c-border);
+  border-radius: 16px;
+  backdrop-filter: blur(20px);
+  font-family: var(--f-mono);
+  font-size: 12px;
+  color: var(--c-text-dim);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.3);
+  z-index: 3;
+}
+.hero-float .big {
+  font-size: 26px;
+  font-weight: 700;
+  display: block;
+  background: var(--g-accent);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.hero-float--top { top: 40px; right: 20px; }
+.hero-float--bot { bottom: 80px; left: 0px; }
+
+/* Hero screen content */
+.s-content {
+  width: 100%;
+  height: 100%;
+  padding: 20px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: linear-gradient(180deg, #060E1A 0%, #0A1620 100%);
+}
+.s-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+.s-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--c-eco-1), var(--c-accent-2));
+}
+.s-xp-bar {
+  flex: 1;
+  height: 4px;
+  background: rgba(255,255,255,0.06);
+  border-radius: 2px;
+  margin: 0 10px;
+  overflow: hidden;
+}
+.s-xp-fill {
+  height: 100%;
+  width: 65%;
+  background: var(--g-accent);
+  border-radius: 2px;
+}
+.s-coins {
+  font-size: 10px;
+  color: var(--c-accent-warm);
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+.s-coins img { width: 14px; height: 14px; }
+.s-card {
+  padding: 12px;
+  border-radius: 12px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.05);
+}
+.s-card-title {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--c-text);
+  margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.s-card-title img { width: 14px; height: 14px; }
+.s-card-desc {
+  font-size: 8px;
+  color: var(--c-text-muted);
+}
+.s-checkin {
+  display: flex;
+  gap: 4px;
+  justify-content: center;
+}
+.s-checkin-day {
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 7px;
+  font-weight: 600;
+}
+.s-checkin-day.done { background: rgba(0,255,170,0.15); color: var(--c-accent); }
+.s-checkin-day.today { background: var(--c-accent); color: var(--c-bg); }
+.s-checkin-day.future { background: rgba(255,255,255,0.04); color: var(--c-text-muted); }
+.s-stat-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.s-mini-stat {
+  padding: 10px;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.04);
+  text-align: center;
+}
+.s-mini-stat .num {
+  font-family: var(--f-display);
+  font-size: 16px;
+  font-weight: 800;
+  background: var(--g-accent);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.s-mini-stat .label {
+  font-size: 7px;
+  color: var(--c-text-muted);
+  margin-top: 2px;
+}
+.s-challenge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.04);
+}
+.s-challenge .c-icon {
+  width: 24px;
+  height: 24px;
+  border-radius: 8px;
+  background: rgba(0,255,170,0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.s-challenge .c-icon img { width: 14px; height: 14px; }
+.s-challenge .c-info { flex: 1; }
+.s-challenge .c-name { font-size: 9px; font-weight: 600; color: var(--c-text); }
+.s-challenge .c-xp { font-size: 7px; color: var(--c-accent); }
+.s-challenge .c-prog {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 2px solid rgba(0,255,170,0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 7px;
+  color: var(--c-accent);
+}
+
+/* Marquee at bottom of hero page */
+.hero-marquee {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  overflow: hidden;
+  padding: 16px 0;
+  border-top: 1px solid var(--c-border);
+  z-index: 5;
+}
+.hero-marquee::before,
+.hero-marquee::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 120px;
+  z-index: 2;
+}
+.hero-marquee::before { left: 0; background: linear-gradient(90deg, var(--c-bg), transparent); }
+.hero-marquee::after { right: 0; background: linear-gradient(270deg, var(--c-bg), transparent); }
+.marquee-track {
+  display: flex;
+  gap: 48px;
+  animation: marquee 25s linear infinite;
+  width: max-content;
+}
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+.marquee-item {
+  font-family: var(--f-display);
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--c-text-muted);
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.marquee-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--c-accent);
+  opacity: 0.4;
+}
+
+/* ============================================================
+   PAGE 2 — PROJECT OVERVIEW
+   ============================================================ */
+.overview-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 64px;
+  flex: 1;
+  align-items: start;
+  margin-top: 40px;
+}
+.overview-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+.overview-card {
+  padding: 28px;
+  border-radius: 20px;
+  border: 1px solid var(--c-border);
+  background: var(--g-card);
+}
+.overview-card--challenge { border-left: 3px solid var(--c-danger); }
+.overview-card--solution { border-left: 3px solid var(--c-accent); }
+.overview-label {
+  font-family: var(--f-mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.overview-label img { width: 20px; height: 20px; }
+.overview-label--red { color: var(--c-danger); }
+.overview-label--green { color: var(--c-accent); }
+.overview-p {
+  font-size: 15px;
+  color: var(--c-text-dim);
+  line-height: 1.8;
+}
+.overview-p strong { color: #fff; }
+
+/* Responsibilities */
+.resp-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 24px;
+}
+.resp-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 18px;
+  border-radius: 12px;
+  background: rgba(16,30,46,0.3);
+  border: 1px solid var(--c-border);
+}
+.resp-row .icon-box {
+  background: rgba(0,255,170,0.08);
+}
+.resp-text {
+  font-size: 14px;
+  color: var(--c-text-dim);
+}
+
+/* Stats grid */
+.stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+.stat-card {
+  padding: 32px;
+  border-radius: 20px;
+  border: 1px solid var(--c-border);
+  background: var(--g-card);
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.stat-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--g-accent);
+}
+.stat-num {
+  font-family: var(--f-display);
+  font-size: 44px;
+  font-weight: 800;
+  background: var(--g-accent);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 6px;
+  line-height: 1;
+}
+.stat-label {
+  font-size: 13px;
+  color: var(--c-text-muted);
+  font-weight: 500;
+}
+
+/* ============================================================
+   PAGE 3 — RESEARCH METHODOLOGY
+   ============================================================ */
+.research-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 56px;
+  flex: 1;
+  align-items: start;
+  margin-top: 36px;
+}
+.research-quotes {
+  border-radius: 24px;
+  overflow: hidden;
+  background: var(--g-card);
+  border: 1px solid var(--c-border);
+  padding: 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  height: fit-content;
+}
+.quote-bubble {
+  padding: 18px 22px;
+  border-radius: 16px;
+  background: rgba(0,255,170,0.05);
+  border: 1px solid rgba(0,255,170,0.08);
+  font-size: 14px;
+  color: var(--c-text-dim);
+  line-height: 1.6;
+}
+.quote-q {
+  font-weight: 600;
+  color: var(--c-accent);
+  font-size: 12px;
+  margin-bottom: 6px;
+  display: block;
+}
+.research-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+.step-card {
+  padding: 28px;
+  border-radius: 20px;
+  border: 1px solid var(--c-border);
+  background: var(--g-card);
+  position: relative;
+}
+.step-num {
+  position: absolute;
+  top: -10px;
+  left: 24px;
+  font-family: var(--f-mono);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--c-accent);
+  padding: 4px 14px;
+  border-radius: 100px;
+  background: var(--c-bg-2);
+  border: 1px solid rgba(0,255,170,0.2);
+}
+.step-title {
+  font-family: var(--f-display);
+  font-size: 18px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 12px;
+}
+.step-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+.step-list li {
+  font-size: 13px;
+  color: var(--c-text-dim);
+  padding-left: 20px;
+  position: relative;
+}
+.step-list li::before {
+  content: '';
+  position: absolute;
+  left: 2px;
+  top: 7px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--c-accent);
+  opacity: 0.5;
+}
+.tool-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+}
+.tool-tag {
+  padding: 7px 16px;
+  border-radius: 100px;
+  border: 1px solid var(--c-border);
+  font-family: var(--f-mono);
+  font-size: 11px;
+  color: var(--c-text-dim);
+  background: rgba(16,30,46,0.4);
+}
+
+/* ============================================================
+   PAGE 4 — USER PERSONAS  
+   ============================================================ */
+.personas-layout {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 32px;
+  flex: 1;
+  margin-top: 36px;
+}
+.persona-card {
+  border-radius: 24px;
+  border: 1px solid var(--c-border);
+  background: var(--g-card);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.persona-photo {
+  width: 100%;
+  height: 200px;
+  position: relative;
+  overflow: hidden;
+}
+.persona-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+}
+.persona-photo::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 80px;
+  background: linear-gradient(to top, rgba(8,15,25,0.95), transparent);
+}
+.persona-body {
+  padding: 24px 28px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  flex: 1;
+}
+.persona-name {
+  font-family: var(--f-display);
+  font-size: 20px;
+  font-weight: 700;
+  color: #fff;
+}
+.persona-role {
+  font-size: 12px;
+  color: var(--c-text-muted);
+  margin-top: 2px;
+}
+.persona-section-label {
+  font-family: var(--f-mono);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--c-accent);
+  margin-bottom: 6px;
+}
+.persona-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.persona-list li {
+  font-size: 13px;
+  color: var(--c-text-dim);
+  padding-left: 14px;
+  position: relative;
+}
+.persona-list li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 7px;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--c-accent);
+}
+.persona-list.pain li::before { background: var(--c-danger); }
+.persona-quote {
+  font-style: italic;
+  font-size: 13px;
+  color: var(--c-text-dim);
+  padding: 14px;
+  border-radius: 12px;
+  background: rgba(0,255,170,0.04);
+  border-left: 2px solid var(--c-accent);
+  line-height: 1.6;
+  margin-top: auto;
+}
+
+/* ============================================================
+   PAGE 5 — USER JOURNEY MAP
+   ============================================================ */
+.journey-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0;
+  border-radius: 20px;
+  overflow: hidden;
+  border: 1px solid var(--c-border);
+  margin-top: 32px;
+}
+.journey-col {
+  padding: 28px 20px;
+  background: var(--g-card);
+  border-right: 1px solid var(--c-border);
+}
+.journey-col:last-child { border-right: none; }
+.j-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: rgba(0,255,170,0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 12px;
+}
+.j-icon img { width: 24px; height: 24px; }
+.j-name {
+  font-family: var(--f-display);
+  font-size: 15px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 16px;
+}
+.j-row {
+  margin-bottom: 12px;
+}
+.j-row-label {
+  font-family: var(--f-mono);
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--c-accent);
+  margin-bottom: 3px;
+}
+.j-row-val {
+  font-size: 12px;
+  color: var(--c-text-dim);
+  line-height: 1.5;
+}
+
+/* Emotional arc bar chart */
+.emotion-arc {
+  margin-top: 24px;
+  padding: 24px 32px;
+  border-radius: 16px;
+  background: var(--g-card);
+  border: 1px solid var(--c-border);
+}
+.emotion-arc-title {
+  font-family: var(--f-display);
+  font-size: 16px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 16px;
+}
+.arc-bars {
+  height: 80px;
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+}
+.arc-bar {
+  flex: 1;
+  border-radius: 6px 6px 0 0;
+  position: relative;
+}
+.arc-bar-label {
+  position: absolute;
+  bottom: -20px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--f-mono);
+  font-size: 9px;
+  color: var(--c-text-muted);
+  white-space: nowrap;
+}
+
+/* ============================================================
+   PAGE 6 — COMPETITIVE ANALYSIS
+   ============================================================ */
+.comp-layout {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 28px;
+  flex: 1;
+  margin-top: 36px;
+}
+.comp-card {
+  padding: 28px;
+  border-radius: 20px;
+  border: 1px solid var(--c-border);
+  background: var(--g-card);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.comp-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.comp-logo {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+.comp-logo img { width: 28px; height: 28px; object-fit: contain; }
+.comp-name {
+  font-family: var(--f-display);
+  font-size: 22px;
+  font-weight: 700;
+  color: #fff;
+}
+.comp-type {
+  font-family: var(--f-mono);
+  font-size: 11px;
+  padding: 6px 14px;
+  border-radius: 100px;
+  border: 1px solid var(--c-border);
+  color: var(--c-text-muted);
+}
+.comp-section { }
+.comp-section-label {
+  font-family: var(--f-mono);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.comp-section-label.green { color: var(--c-accent); }
+.comp-section-label.red { color: var(--c-danger); }
+.comp-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.comp-list li {
+  font-size: 13px;
+  color: var(--c-text-dim);
+  padding-left: 18px;
+  position: relative;
+}
+.comp-list.green li::before {
+  content: '✓';
+  position: absolute;
+  left: 0;
+  color: var(--c-accent);
+  font-size: 12px;
+  font-weight: 700;
+}
+.comp-list.red li::before {
+  content: '✕';
+  position: absolute;
+  left: 0;
+  color: var(--c-danger);
+  font-size: 12px;
+}
+.comp-diff {
+  padding: 16px;
+  border-radius: 12px;
+  background: rgba(0,255,170,0.04);
+  border: 1px solid rgba(0,255,170,0.08);
+  margin-top: auto;
+}
+.comp-diff-label {
+  font-family: var(--f-mono);
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--c-accent);
+  margin-bottom: 4px;
+}
+.comp-diff-text {
+  font-size: 13px;
+  color: var(--c-text-dim);
+}
+
+/* ============================================================
+   PAGE 7 — IA + DESIGN SYSTEM
+   ============================================================ */
+.ia-ds-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 48px;
+  flex: 1;
+  margin-top: 32px;
+}
+.ia-section, .ds-section { display: flex; flex-direction: column; gap: 20px; }
+.ia-sub-title, .ds-sub-title {
+  font-family: var(--f-display);
+  font-size: 20px;
+  font-weight: 700;
+  color: #fff;
+}
+.ia-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+.ia-card {
+  padding: 20px;
+  border-radius: 16px;
+  border: 1px solid var(--c-border);
+  background: var(--g-card);
+  text-align: center;
+}
+.ia-card-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  margin: 0 auto 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.ia-card-icon img { width: 28px; height: 28px; }
+.ia-card-title {
+  font-family: var(--f-display);
+  font-size: 14px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 10px;
+}
+.ia-card-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.ia-card-list li {
+  font-size: 11px;
+  color: var(--c-text-muted);
+}
+
+/* 5th IA card spans full width */
+.ia-card--wide {
+  grid-column: 1 / -1;
+}
+
+/* Design system */
+.ds-block {
+  padding: 28px;
+  border-radius: 20px;
+  border: 1px solid var(--c-border);
+  background: var(--g-card);
+}
+.ds-block-title {
+  font-family: var(--f-display);
+  font-size: 16px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 16px;
+}
+.ds-colors {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.ds-swatch {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+.ds-swatch-circle {
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  border: 2px solid rgba(255,255,255,0.06);
+}
+.ds-swatch-label {
+  font-family: var(--f-mono);
+  font-size: 9px;
+  color: var(--c-text-muted);
+}
+.ds-type-row {
+  padding: 14px 0;
+  border-bottom: 1px solid var(--c-border);
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+.ds-type-row:last-child { border-bottom: none; }
+.ds-type-sample {
+  font-family: var(--f-display);
+  color: #fff;
+}
+.ds-type-meta {
+  font-family: var(--f-mono);
+  font-size: 10px;
+  color: var(--c-text-muted);
+}
+
+/* ============================================================
+   PAGE 8 — HI-FI MOCKUPS
+   ============================================================ */
+.mockup-row {
+  display: flex;
+  justify-content: center;
+  gap: 28px;
+  flex: 1;
+  align-items: center;
+  margin-top: 20px;
+}
+.mock-phone {
+  width: 210px;
+  aspect-ratio: 9/19.5;
+  border-radius: 28px;
+  border: 2px solid rgba(255,255,255,0.08);
+  background: var(--c-bg-3);
+  overflow: hidden;
+  position: relative;
+  box-shadow: 0 20px 60px -15px rgba(0,0,0,0.5);
+}
+.mock-phone:nth-child(odd) {
+  transform: translateY(24px);
+}
+.mock-phone-label {
+  position: absolute;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--f-mono);
+  font-size: 10px;
+  color: var(--c-text-muted);
+  background: rgba(0,0,0,0.5);
+  padding: 5px 12px;
+  border-radius: 100px;
+  white-space: nowrap;
+  backdrop-filter: blur(10px);
+  z-index: 2;
+}
+
+/* ============================================================
+   PAGE 9 — OUTCOMES & REFLECTION
+   ============================================================ */
+.outcomes-layout {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+  margin-top: 36px;
+}
+.outcome-card {
+  padding: 36px 28px;
+  border-radius: 24px;
+  border: 1px solid var(--c-border);
+  background: var(--g-card);
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.outcome-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% 0%, rgba(0,255,170,0.06) 0%, transparent 60%);
+}
+.outcome-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 16px;
+  margin: 0 auto 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+.outcome-icon img { width: 32px; height: 32px; }
+.outcome-num {
+  font-family: var(--f-display);
+  font-size: 40px;
+  font-weight: 800;
+  background: var(--g-accent);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 6px;
+  line-height: 1;
+  position: relative;
+}
+.outcome-label {
+  font-size: 13px;
+  color: var(--c-text-muted);
+  position: relative;
+}
+
+/* Cross-platform section in outcomes page */
+.cross-section {
+  margin-top: 40px;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 24px;
+}
+.cross-card {
+  padding: 24px;
+  border-radius: 16px;
+  border: 1px solid var(--c-border);
+  background: var(--g-card);
+}
+.cross-card-title {
+  font-family: var(--f-display);
+  font-size: 15px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.cross-card-title img { width: 20px; height: 20px; }
+.cross-card-desc {
+  font-size: 13px;
+  color: var(--c-text-dim);
+  line-height: 1.6;
+}
+
+/* ============================================================
+   PAGE 9 ENHANCED — Learnings + User Feedback
+   ============================================================ */
+.outcomes-bottom {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+  margin-top: 28px;
+}
+.learnings-block {
+  padding: 28px;
+  border-radius: 20px;
+  border: 1px solid var(--c-border);
+  background: var(--g-card);
+}
+.learnings-title {
+  font-family: var(--f-display);
+  font-size: 18px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.learnings-title img { width: 22px; height: 22px; }
+.learning-item {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--c-border);
+}
+.learning-item:last-child { border-bottom: none; }
+.learning-num {
+  font-family: var(--f-display);
+  font-size: 20px;
+  font-weight: 800;
+  background: var(--g-accent);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  flex-shrink: 0;
+  width: 28px;
+}
+.learning-text {
+  font-size: 13px;
+  color: var(--c-text-dim);
+  line-height: 1.6;
+}
+.learning-text strong { color: #fff; }
+
+/* User feedback panel */
+.feedback-panel {
+  padding: 28px;
+  border-radius: 20px;
+  border: 1px solid var(--c-border);
+  background: var(--g-card);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.feedback-title {
+  font-family: var(--f-display);
+  font-size: 18px;
+  font-weight: 700;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.feedback-title img { width: 22px; height: 22px; }
+.feedback-quote {
+  padding: 16px;
+  border-radius: 14px;
+  background: rgba(0,255,170,0.03);
+  border-left: 2px solid var(--c-accent);
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+}
+.feedback-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  object-fit: cover;
+}
+.feedback-content {
+  flex: 1;
+}
+.feedback-text {
+  font-size: 13px;
+  font-style: italic;
+  color: var(--c-text-dim);
+  line-height: 1.5;
+  margin-bottom: 4px;
+}
+.feedback-author {
+  font-family: var(--f-mono);
+  font-size: 10px;
+  color: var(--c-text-muted);
+}
+.feedback-stars {
+  display: flex;
+  gap: 2px;
+  margin-top: 10px;
+}
+.feedback-stars img { width: 16px; height: 16px; }
+.satisfaction-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 0;
+}
+.sat-label {
+  font-size: 11px;
+  color: var(--c-text-muted);
+  width: 100px;
+  flex-shrink: 0;
+}
+.sat-track {
+  flex: 1;
+  height: 8px;
+  background: rgba(255,255,255,0.04);
+  border-radius: 4px;
+  overflow: hidden;
+}
+.sat-fill {
+  height: 100%;
+  border-radius: 4px;
+}
+.sat-val {
+  font-family: var(--f-mono);
+  font-size: 11px;
+  font-weight: 700;
+  width: 36px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+/* ============================================================
+   PAGE 10 — FUTURE OPPORTUNITIES
+   ============================================================ */
+.future-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 36px;
+  flex: 1;
+  margin-top: 28px;
+}
+
+/* Roadmap timeline */
+.roadmap {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  position: relative;
+}
+.roadmap::before {
+  content: '';
+  position: absolute;
+  left: 19px;
+  top: 28px;
+  bottom: 28px;
+  width: 2px;
+  background: linear-gradient(to bottom, var(--c-accent), var(--c-accent-2), var(--c-accent-3));
+  opacity: 0.3;
+}
+.roadmap-item {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+  padding: 16px 0;
+  position: relative;
+}
+.roadmap-dot {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+}
+.roadmap-dot img { width: 22px; height: 22px; }
+.roadmap-body { flex: 1; }
+.roadmap-phase {
+  font-family: var(--f-mono);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+.roadmap-heading {
+  font-family: var(--f-display);
+  font-size: 17px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 6px;
+}
+.roadmap-desc {
+  font-size: 12px;
+  color: var(--c-text-dim);
+  line-height: 1.6;
+}
+.roadmap-tags {
+  display: flex;
+  gap: 6px;
+  margin-top: 8px;
+  flex-wrap: wrap;
+}
+.roadmap-tag {
+  font-family: var(--f-mono);
+  font-size: 9px;
+  padding: 4px 10px;
+  border-radius: 100px;
+  border: 1px solid var(--c-border);
+  color: var(--c-text-muted);
+}
+
+/* Future concept cards */
+.future-right {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.concept-card {
+  padding: 24px;
+  border-radius: 20px;
+  border: 1px solid var(--c-border);
+  background: var(--g-card);
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+}
+.concept-visual {
+  width: 80px;
+  height: 80px;
+  border-radius: 16px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+.concept-visual img { width: 44px; height: 44px; position: relative; z-index: 1; }
+.concept-visual::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0.15;
+}
+.concept-body { flex: 1; }
+.concept-title {
+  font-family: var(--f-display);
+  font-size: 16px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 6px;
+}
+.concept-desc {
+  font-size: 12px;
+  color: var(--c-text-dim);
+  line-height: 1.6;
+  margin-bottom: 8px;
+}
+.concept-metrics {
+  display: flex;
+  gap: 16px;
+}
+.concept-metric {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.concept-metric-num {
+  font-family: var(--f-display);
+  font-size: 16px;
+  font-weight: 800;
+  background: var(--g-accent);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.concept-metric-label {
+  font-size: 10px;
+  color: var(--c-text-muted);
+}
+
+/* Reflection / Thank you */
+.reflection-strip {
+  margin-top: 24px;
+  padding: 24px 32px;
+  border-radius: 20px;
+  border: 1px solid rgba(0,255,170,0.1);
+  background: linear-gradient(135deg, rgba(0,255,170,0.04), rgba(0,212,255,0.02));
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+.reflection-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  background: rgba(0,255,170,0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.reflection-icon img { width: 32px; height: 32px; }
+.reflection-body { flex: 1; }
+.reflection-heading {
+  font-family: var(--f-display);
+  font-size: 17px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 4px;
+}
+.reflection-text {
+  font-size: 13px;
+  color: var(--c-text-dim);
+  line-height: 1.6;
+}
+
+/* Footer bar */
+.page-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 20px;
+  border-top: 1px solid var(--c-border);
+  margin-top: auto;
+}
+.page-footer-text {
+  font-family: var(--f-mono);
+  font-size: 11px;
+  color: var(--c-text-muted);
+}
+.page-footer-brand {
+  font-family: var(--f-display);
+  font-size: 16px;
+  font-weight: 800;
+  background: var(--g-accent);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+     PAGE 1 — COVER / HERO
+     ============================================================ -->
+<div class="page page--hero" id="page-1">
+  <div class="hero-grid-overlay"></div>
+  <div class="mesh-bg">
+    <div class="mesh-blob" style="width:800px;height:800px;top:-200px;right:-200px;background:radial-gradient(circle,rgba(0,255,170,0.08) 0%,transparent 60%);"></div>
+    <div class="mesh-blob" style="width:600px;height:600px;bottom:-150px;left:-100px;background:radial-gradient(circle,rgba(0,212,255,0.06) 0%,transparent 60%);"></div>
+  </div>
+  <div class="page-inner">
+    <div class="hero-layout">
+      <div>
+        <div class="hero-badge">
+          <span class="hero-badge-dot"></span>
+          UX/UI Design · 2024
+        </div>
+        <h1 class="hero-title">Eco<br>Loop</h1>
+        <p class="hero-subtitle">Gamified Sustainable Living<br>Mobile Application</p>
+        <div class="hero-meta-row">
+          <div class="hero-meta-item">
+            <span class="hero-meta-label">Role</span>
+            <span class="hero-meta-val">UX/UI Designer & Researcher</span>
+          </div>
+          <div class="hero-meta-item">
+            <span class="hero-meta-label">Duration</span>
+            <span class="hero-meta-val">5 Weeks · 2024</span>
+          </div>
+          <div class="hero-meta-item">
+            <span class="hero-meta-label">Deliverables</span>
+            <span class="hero-meta-val">Mobile App (iOS/Android)</span>
+          </div>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <div class="hero-phone-glow"></div>
+        <div class="hero-float hero-float--top">
+          <span class="big">82%</span>
+          Retention Increase
+        </div>
+        <div class="hero-float hero-float--bot">
+          <span class="big">5</span>
+          Core Screens
+        </div>
+        <div class="hero-phone">
+          <div class="s-content">
+            <div class="s-header">
+              <div class="s-avatar"></div>
+              <div class="s-xp-bar"><div class="s-xp-fill"></div></div>
+              <div class="s-coins">
+                <img src="https://img.icons8.com/fluency/48/coin-wallet.png" alt="coin"> 2,450
+              </div>
+            </div>
+            <div class="s-card">
+              <div class="s-card-title">
+                <img src="https://img.icons8.com/fluency/48/leaf.png" alt="leaf"> Welcome back, Lisa!
+              </div>
+              <div class="s-card-desc">Level 12 Eco-Warrior · 7 day streak</div>
+            </div>
+            <div class="s-checkin">
+              <div class="s-checkin-day done">M</div>
+              <div class="s-checkin-day done">T</div>
+              <div class="s-checkin-day done">W</div>
+              <div class="s-checkin-day done">T</div>
+              <div class="s-checkin-day today">F</div>
+              <div class="s-checkin-day future">S</div>
+              <div class="s-checkin-day future">S</div>
+            </div>
+            <div class="s-stat-row">
+              <div class="s-mini-stat"><div class="num">42</div><div class="label">CO₂ Saved</div></div>
+              <div class="s-mini-stat"><div class="num">18</div><div class="label">Challenges</div></div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:6px;">
+              <div class="s-challenge">
+                <div class="c-icon"><img src="https://img.icons8.com/fluency/48/bicycle.png" alt="bike"></div>
+                <div class="c-info"><div class="c-name">Bike to Work</div><div class="c-xp">+50 XP</div></div>
+                <div class="c-prog">3/5</div>
+              </div>
+              <div class="s-challenge">
+                <div class="c-icon" style="background:rgba(16,185,129,0.15);"><img src="https://img.icons8.com/fluency/48/recycle-sign.png" alt="recycle"></div>
+                <div class="c-info"><div class="c-name">Zero Waste Day</div><div class="c-xp">+80 XP</div></div>
+                <div class="c-prog">1/3</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="hero-marquee">
+    <div class="marquee-track">
+      <span class="marquee-item"><span class="marquee-dot"></span>User Research</span>
+      <span class="marquee-item"><span class="marquee-dot"></span>Gamification</span>
+      <span class="marquee-item"><span class="marquee-dot"></span>Sustainability</span>
+      <span class="marquee-item"><span class="marquee-dot"></span>Mobile-First</span>
+      <span class="marquee-item"><span class="marquee-dot"></span>Design System</span>
+      <span class="marquee-item"><span class="marquee-dot"></span>Prototyping</span>
+      <span class="marquee-item"><span class="marquee-dot"></span>User Testing</span>
+      <span class="marquee-item"><span class="marquee-dot"></span>Interaction Design</span>
+      <span class="marquee-item"><span class="marquee-dot"></span>User Research</span>
+      <span class="marquee-item"><span class="marquee-dot"></span>Gamification</span>
+      <span class="marquee-item"><span class="marquee-dot"></span>Sustainability</span>
+      <span class="marquee-item"><span class="marquee-dot"></span>Mobile-First</span>
+      <span class="marquee-item"><span class="marquee-dot"></span>Design System</span>
+      <span class="marquee-item"><span class="marquee-dot"></span>Prototyping</span>
+      <span class="marquee-item"><span class="marquee-dot"></span>User Testing</span>
+      <span class="marquee-item"><span class="marquee-dot"></span>Interaction Design</span>
+    </div>
+  </div>
+  <div class="page-num">01 / 10</div>
+</div>
+
+<!-- ============================================================
+     PAGE 2 — PROJECT OVERVIEW
+     ============================================================ -->
+<div class="page" id="page-2">
+  <div class="mesh-bg">
+    <div class="mesh-blob" style="width:500px;height:500px;top:-100px;left:-100px;background:radial-gradient(circle,rgba(0,255,170,0.04) 0%,transparent 60%);"></div>
+    <div class="mesh-blob" style="width:400px;height:400px;bottom:-50px;right:-80px;background:radial-gradient(circle,rgba(0,212,255,0.03) 0%,transparent 60%);"></div>
+  </div>
+  <div class="page-inner">
+    <!-- Header with project meta pills -->
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+      <div>
+        <div class="section-tag">Project Overview</div>
+        <h2 class="section-title">Making Sustainability<br>Addictive</h2>
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end;max-width:420px;">
+        <div class="finding-pill"><span class="pill-num">8</span> In-depth Interviews</div>
+        <div class="finding-pill"><span class="pill-num">45</span> Survey Responses</div>
+        <div class="finding-pill"><span class="pill-num">12</span> Weeks Duration</div>
+        <div class="finding-pill"><span class="pill-num">Solo</span> End-to-end UX/UI</div>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1.1fr 0.9fr;gap:48px;flex:1;margin-top:24px;align-items:start;">
+      <!-- LEFT COLUMN -->
+      <div style="display:flex;flex-direction:column;gap:18px;">
+        <!-- Challenge card — Deloitte verified data -->
+        <div class="overview-card overview-card--challenge">
+          <div class="overview-label overview-label--red">
+            <img src="https://img.icons8.com/fluency/48/high-voltage.png" alt="challenge"> The Challenge
+          </div>
+          <p class="overview-p"><strong>62% of Gen Zs</strong> feel anxious about climate change, and <strong>64% are willing to pay more</strong> for sustainable products — yet most lack tools to act consistently. Our survey confirmed: 73% of respondents tried eco-apps in the past but <strong>abandoned them within 10 days</strong>.</p>
+          <span class="source-tag">Source: Deloitte Global 2024 Gen Z &amp; Millennial Survey · 22,841 respondents across 44 countries</span>
+        </div>
+        <!-- Solution card -->
+        <div class="overview-card overview-card--solution">
+          <div class="overview-label overview-label--green">
+            <img src="https://img.icons8.com/fluency/48/leaf.png" alt="solution"> The Solution
+          </div>
+          <p class="overview-p">EcoLoop applies <strong>gamification mechanics proven to boost engagement by 83%</strong> (TalentLMS). Streaks, XP, and social leaderboards borrowed from Duolingo's playbook  — which grew to <strong>50M+ daily active users</strong> using exactly these patterns — adapted for sustainability habit-tracking.</p>
+          <span class="source-tag">Source: TalentLMS Gamification Survey, 2019 · Duolingo Q4 2025 Earnings (NASDAQ: DUOL)</span>
+        </div>
+        <!-- Research context photo strip -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;height:140px;">
+          <div class="photo-panel" style="border-radius:12px;">
+            <img src="https://images.unsplash.com/photo-1641355527446-232d7f1f2c10?w=500&h=300&fit=crop" alt="Affinity mapping">
+            <div class="photo-caption">Affinity mapping — clustering interview insights</div>
+          </div>
+          <div class="photo-panel" style="border-radius:12px;">
+            <img src="https://images.unsplash.com/photo-1557180491-4c2f503222d9?w=500&h=300&fit=crop" alt="User interview">
+            <div class="photo-caption">User interview session via Zoom</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT COLUMN -->
+      <div style="display:flex;flex-direction:column;gap:16px;">
+        <!-- Gamification Market Growth (Mordor Intelligence verified) -->
+        <div class="market-growth">
+          <div class="mg-header">
+            <div class="mg-title">Global Gamification Market</div>
+            <div class="mg-source">MORDOR INTELLIGENCE, JAN 2026</div>
+          </div>
+          <div class="mg-visual">
+            <div class="mg-bar" style="height:26%;"><span class="mg-bar-label">'25</span><span class="mg-bar-val">$29B</span></div>
+            <div class="mg-bar" style="height:32%;"><span class="mg-bar-label">'26</span><span class="mg-bar-val">$36B</span></div>
+            <div class="mg-bar" style="height:46%;"><span class="mg-bar-label">'28</span></div>
+            <div class="mg-bar" style="height:66%;"><span class="mg-bar-label">'29</span></div>
+            <div class="mg-bar" style="height:82%;"><span class="mg-bar-label">'30</span></div>
+            <div class="mg-bar highlight" style="height:100%;"><span class="mg-bar-label">'31</span><span class="mg-bar-val">$112B</span></div>
+          </div>
+          <div class="mg-row">
+            <div class="mg-stat">
+              <div class="mg-stat-num">25.2%</div>
+              <div class="mg-stat-label">CAGR 2026→2031</div>
+            </div>
+            <div class="mg-stat">
+              <div class="mg-stat-num">$112B</div>
+              <div class="mg-stat-label">Projected 2031</div>
+            </div>
+            <div class="mg-stat">
+              <div class="mg-stat-num">28.6%</div>
+              <div class="mg-stat-label">Asia-Pacific CAGR</div>
+            </div>
+          </div>
+        </div>
+        <!-- Why NOW — the intent-action gap insight -->
+        <div class="insight-callout" style="padding:16px 20px;">
+          <div class="insight-icon">
+            <img src="https://img.icons8.com/fluency/48/idea.png" alt="insight">
+          </div>
+          <div>
+            <div class="insight-text" style="font-size:13px;"><strong>The Intent-Action Gap:</strong> 83% of employees with gamified training feel motivated, vs only <strong>28% without</strong>. Boredom drops from 49% → 10%. The same principle applies to eco-habits.</div>
+            <span class="source-tag">Source: TalentLMS Gamification at Work Survey · ~530 qualified respondents</span>
+          </div>
+        </div>
+        <!-- Responsibilities compact grid -->
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">
+          <div style="padding:12px;border-radius:12px;background:rgba(16,30,46,0.3);border:1px solid var(--c-border);text-align:center;">
+            <img src="https://img.icons8.com/fluency/48/search.png" alt="" style="width:24px;height:24px;margin:0 auto 6px;">
+            <div style="font-size:11px;color:var(--c-text-dim);">User Research</div>
+          </div>
+          <div style="padding:12px;border-radius:12px;background:rgba(16,30,46,0.3);border:1px solid var(--c-border);text-align:center;">
+            <img src="https://img.icons8.com/fluency/48/combo-chart.png" alt="" style="width:24px;height:24px;margin:0 auto 6px;">
+            <div style="font-size:11px;color:var(--c-text-dim);">Market Analysis</div>
+          </div>
+          <div style="padding:12px;border-radius:12px;background:rgba(16,30,46,0.3);border:1px solid var(--c-border);text-align:center;">
+            <img src="https://img.icons8.com/fluency/48/module.png" alt="" style="width:24px;height:24px;margin:0 auto 6px;">
+            <div style="font-size:11px;color:var(--c-text-dim);">IA & Flows</div>
+          </div>
+          <div style="padding:12px;border-radius:12px;background:rgba(16,30,46,0.3);border:1px solid var(--c-border);text-align:center;">
+            <img src="https://img.icons8.com/fluency/48/design.png" alt="" style="width:24px;height:24px;margin:0 auto 6px;">
+            <div style="font-size:11px;color:var(--c-text-dim);">Design System</div>
+          </div>
+          <div style="padding:12px;border-radius:12px;background:rgba(16,30,46,0.3);border:1px solid var(--c-border);text-align:center;">
+            <img src="https://img.icons8.com/fluency/48/laptop-coding.png" alt="" style="width:24px;height:24px;margin:0 auto 6px;">
+            <div style="font-size:11px;color:var(--c-text-dim);">Prototyping</div>
+          </div>
+          <div style="padding:12px;border-radius:12px;background:rgba(16,30,46,0.3);border:1px solid var(--c-border);text-align:center;">
+            <img src="https://img.icons8.com/fluency/48/test-passed.png" alt="" style="width:24px;height:24px;margin:0 auto 6px;">
+            <div style="font-size:11px;color:var(--c-text-dim);">Usability Test</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="page-footer">
+      <span class="page-footer-text">EcoLoop · UX/UI Case Study · 2024</span>
+      <span class="page-footer-brand">EcoLoop</span>
+    </div>
+  </div>
+  <div class="page-num">02 / 10</div>
+</div>
+
+<!-- ============================================================
+     PAGE 3 — RESEARCH METHODOLOGY
+     ============================================================ -->
+<div class="page" id="page-3">
+  <div class="mesh-bg">
+    <div class="mesh-blob" style="width:500px;height:500px;bottom:-100px;right:-100px;background:radial-gradient(circle,rgba(0,212,255,0.04) 0%,transparent 60%);"></div>
+  </div>
+  <div class="page-inner">
+    <!-- Header row with research process photos -->
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:40px;">
+      <div style="flex-shrink:0;">
+        <div class="section-tag">Research Phase</div>
+        <h2 class="section-title" style="font-size:44px;">Mixed-Methods<br>Research</h2>
+      </div>
+      <!-- Research process photo strip -->
+      <div style="display:flex;gap:10px;flex:1;max-width:640px;">
+        <div class="photo-panel" style="flex:1;height:140px;border-radius:12px;">
+          <img src="https://images.unsplash.com/photo-1641355527446-232d7f1f2c10?w=400&h=280&fit=crop" alt="Sticky notes affinity mapping">
+          <div class="photo-caption">Affinity mapping</div>
+        </div>
+        <div class="photo-panel" style="flex:1;height:140px;border-radius:12px;">
+          <img src="https://images.unsplash.com/photo-1576595580361-90a855b84b20?w=400&h=280&fit=crop" alt="Design workshop">
+          <div class="photo-caption">Workshop session</div>
+        </div>
+        <div class="photo-panel" style="flex:1;height:140px;border-radius:12px;">
+          <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=280&fit=crop" alt="Data analysis">
+          <div class="photo-caption">Data analysis</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:36px;flex:1;margin-top:20px;">
+      <!-- LEFT: Interview Insights + Survey Data -->
+      <div style="display:flex;flex-direction:column;gap:14px;">
+        <div style="font-family:var(--f-display);font-size:16px;font-weight:700;color:#fff;display:flex;align-items:center;gap:10px;">
+          <img src="https://img.icons8.com/fluency/48/conference-call.png" alt="interviews" style="width:22px;height:22px;">
+          Interview Findings · 8 Participants
+        </div>
+        <!-- Quotes with real detail -->
+        <div class="research-quotes" style="padding:20px;gap:12px;">
+          <div class="quote-bubble" style="padding:12px 16px;">
+            <span class="quote-q">Q: What stops you from being more eco-friendly?</span>
+            "I want to care, but I genuinely don't know <strong style="color:#fff;">if sorting my trash actually matters</strong>. There's zero feedback. At least with my fitness tracker I see calories burned."
+            <span class="source-tag">— P03, 26F, Marketing Manager, Central HK</span>
+          </div>
+          <div class="quote-bubble" style="padding:12px 16px;">
+            <span class="quote-q">Q: Which apps keep you coming back daily?</span>
+            "Duolingo — I'm on a <strong style="color:#fff;">247-day streak</strong>. That owl guilt-trips me every morning. If there was an eco version of that pressure, I'd use a reusable cup every single day."
+            <span class="source-tag">— P05, 22M, CS Student, NUS Singapore</span>
+          </div>
+          <div class="quote-bubble" style="padding:12px 16px;">
+            <span class="quote-q">Q: Have you tried sustainability apps before?</span>
+            "I downloaded JouleBug and AWorld last year. JouleBug felt like a <strong style="color:#fff;">corporate CSR checkbox</strong>, not a real tool. Deleted both within 8 days."
+            <span class="source-tag">— P07, 31F, Graphic Designer, Kowloon</span>
+          </div>
+        </div>
+        <!-- Survey Key Findings — verified internal data -->
+        <div style="padding:16px;border-radius:14px;background:var(--g-card);border:1px solid var(--c-border);">
+          <div style="font-family:var(--f-mono);font-size:10px;letter-spacing:2px;color:var(--c-accent);margin-bottom:8px;">PRIMARY SURVEY (N=45, ages 22–35, HK/SG urban)</div>
+          <div class="survey-results">
+            <div class="survey-row">
+              <span class="survey-label" style="width:160px;">Care about sustainability</span>
+              <div class="survey-bar"><div class="survey-fill" style="width:89%;background:linear-gradient(90deg,rgba(0,255,170,0.3),rgba(0,255,170,0.6));">89%</div></div>
+            </div>
+            <div class="survey-row">
+              <span class="survey-label" style="width:160px;">Abandoned eco-app &lt;14d</span>
+              <div class="survey-bar"><div class="survey-fill" style="width:73%;background:linear-gradient(90deg,rgba(255,107,107,0.3),rgba(255,107,107,0.6));">73%</div></div>
+            </div>
+            <div class="survey-row">
+              <span class="survey-label" style="width:160px;">Would try gamified eco-app</span>
+              <div class="survey-bar"><div class="survey-fill" style="width:82%;background:linear-gradient(90deg,rgba(0,212,255,0.3),rgba(0,212,255,0.6));">82%</div></div>
+            </div>
+            <div class="survey-row">
+              <span class="survey-label" style="width:160px;">Motivated by competition</span>
+              <div class="survey-bar"><div class="survey-fill" style="width:67%;background:linear-gradient(90deg,rgba(167,139,250,0.3),rgba(167,139,250,0.6));">67%</div></div>
+            </div>
+          </div>
+        </div>
+        <div style="padding:12px 16px;border-radius:12px;background:rgba(255,179,71,0.04);border:1px solid rgba(255,179,71,0.1);display:flex;gap:10px;align-items:center;">
+          <img src="https://img.icons8.com/fluency/48/idea.png" alt="insight" style="width:20px;height:20px;">
+          <div style="font-size:12px;color:var(--c-text-dim);line-height:1.5;">
+            <strong style="color:var(--c-accent-warm);">Key finding:</strong> The #1 reason for abandonment was <strong style="color:#fff;">"no visible impact"</strong> (cited by 6 of 8 interview participants). Users need to feel their actions matter in real-time.
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT: Research Steps + Verified Evidence -->
+      <div style="display:flex;flex-direction:column;gap:14px;">
+        <div class="step-card" style="padding:20px;">
+          <span class="step-num">01</span>
+          <h3 class="step-title" style="font-size:15px;">Secondary Research</h3>
+          <ul class="step-list">
+            <li>Gamification market: <strong style="color:#fff;">$29.1B in 2025</strong>, projected $112B by 2031 <span class="source-tag">Mordor Intelligence</span></li>
+            <li>Deloitte 2024: <strong style="color:#fff;">62% of Gen Zs</strong> anxious about climate; 64% pay premium for sustainable products</li>
+            <li>Competitive audit: Duolingo (<strong style="color:#fff;">50M+ DAU</strong>), Forest (109K+ real trees planted), Habitica</li>
+            <li>Academic: Octalysis framework, BJ Fogg Behavior Model, Self-Determination Theory</li>
+          </ul>
+          <div class="tool-tags" style="margin-top:8px;">
+            <span class="tool-tag">Google Scholar</span>
+            <span class="tool-tag">Mordor Intelligence</span>
+            <span class="tool-tag">Deloitte</span>
+          </div>
+        </div>
+        <div class="step-card" style="padding:20px;">
+          <span class="step-num">02</span>
+          <h3 class="step-title" style="font-size:15px;">Primary Research</h3>
+          <ul class="step-list">
+            <li>8 semi-structured interviews (45min avg, via Zoom, recorded &amp; transcribed)</li>
+            <li>Screener criteria: aged 22–35, HK/SG urban, owns smartphone, expressed eco-interest</li>
+            <li>Online survey: 45 responses via Google Forms (15 questions + open-ended)</li>
+            <li>Affinity mapping → <strong style="color:#fff;">4 pain point clusters</strong> + 3 opportunity themes</li>
+          </ul>
+          <div class="tool-tags" style="margin-top:8px;">
+            <span class="tool-tag">Zoom</span>
+            <span class="tool-tag">Google Forms</span>
+            <span class="tool-tag">Miro</span>
+            <span class="tool-tag">Notion</span>
+          </div>
+        </div>
+        <!-- Gamification effectiveness — all from verified sources -->
+        <div style="padding:16px;border-radius:14px;background:rgba(167,139,250,0.04);border:1px solid rgba(167,139,250,0.1);">
+          <div style="font-family:var(--f-mono);font-size:10px;letter-spacing:2px;color:var(--c-accent-3);margin-bottom:10px;">
+            <img src="https://img.icons8.com/fluency/48/game-controller.png" alt="game" style="width:14px;height:14px;vertical-align:middle;margin-right:6px;">
+            GAMIFICATION EVIDENCE (ALL VERIFIED)
+          </div>
+          <div style="display:flex;flex-direction:column;gap:6px;">
+            <div class="case-card" style="padding:10px 12px;">
+              <div class="case-stat green" style="font-size:20px;">83%</div>
+              <div class="case-info"><div class="case-title" style="font-size:11px;">Feel motivated with gamification</div><div class="case-desc" style="font-size:9px;">vs 28% without · TalentLMS Survey</div></div>
+            </div>
+            <div class="case-card" style="padding:10px 12px;">
+              <div class="case-stat blue" style="font-size:20px;">89%</div>
+              <div class="case-info"><div class="case-title" style="font-size:11px;">Would be more productive if gamified</div><div class="case-desc" style="font-size:9px;">~530 US employees · TalentLMS 2019</div></div>
+            </div>
+            <div class="case-card" style="padding:10px 12px;">
+              <div class="case-stat warm" style="font-size:20px;">+60%</div>
+              <div class="case-info"><div class="case-title" style="font-size:11px;">Compliance training completion boost</div><div class="case-desc" style="font-size:9px;">Gamified modules vs slides · Mordor Intelligence</div></div>
+            </div>
+            <div class="case-card" style="padding:10px 12px;">
+              <div class="case-stat purple" style="font-size:20px;">50M+</div>
+              <div class="case-info"><div class="case-title" style="font-size:11px;">Duolingo DAU via gamification alone</div><div class="case-desc" style="font-size:9px;">Targeting 100M DAU · Q4 2025 Earnings</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="page-footer">
+      <span class="page-footer-text">EcoLoop · UX/UI Case Study · 2024</span>
+      <span class="page-footer-brand">EcoLoop</span>
+    </div>
+  </div>
+  <div class="page-num">03 / 10</div>
+</div>
+
+<!-- ============================================================
+     PAGE 4 — USER PERSONAS
+     ============================================================ -->
+<div class="page" id="page-4">
+  <div class="mesh-bg">
+    <div class="mesh-blob" style="width:600px;height:600px;top:-150px;left:30%;background:radial-gradient(circle,rgba(167,139,250,0.04) 0%,transparent 60%);"></div>
+  </div>
+  <div class="page-inner">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+      <div>
+        <div class="section-tag">User Research</div>
+        <h2 class="section-title">User Personas</h2>
+        <p class="section-desc" style="max-width:520px;">Three archetypes synthesized from 8 interviews and 45 surveys — representing the spectrum from individual habit-builders to community organizers.</p>
+      </div>
+      <!-- Verified stat callout -->
+      <div style="display:flex;flex-direction:column;gap:8px;max-width:360px;">
+        <div class="insight-callout" style="padding:12px 16px;">
+          <div class="insight-icon" style="width:28px;height:28px;border-radius:8px;">
+            <img src="https://img.icons8.com/fluency/48/statistics.png" alt="stat" style="width:16px;height:16px;">
+          </div>
+          <div>
+            <div class="insight-text" style="font-size:11px;"><strong>64%</strong> of Gen Zs willing to pay more for sustainable products</div>
+            <span class="source-tag">Deloitte Global 2024 · 22,841 respondents</span>
+          </div>
+        </div>
+        <div class="insight-callout" style="padding:12px 16px;background:rgba(255,107,107,0.04);border-color:rgba(255,107,107,0.1);">
+          <div class="insight-icon" style="width:28px;height:28px;border-radius:8px;background:rgba(255,107,107,0.1);">
+            <img src="https://img.icons8.com/fluency/48/sad.png" alt="sad" style="width:16px;height:16px;">
+          </div>
+          <div>
+            <div class="insight-text" style="font-size:11px;"><strong>62%</strong> feel anxious about climate — yet lack tools to act</div>
+            <span class="source-tag">Deloitte Global 2024 Gen Z Survey</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="personas-layout" style="margin-top:20px;">
+      <!-- Lisa Chen -->
+      <div class="persona-card">
+        <div class="persona-photo" style="height:180px;">
+          <img src="https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=600&h=360&fit=crop&crop=face" alt="Lisa Chen">
+        </div>
+        <div class="persona-body" style="padding:18px 22px 22px;gap:10px;">
+          <div>
+            <div class="persona-name" style="font-size:18px;">Lisa Chen</div>
+            <div class="persona-role">27, Product Manager · Central, Hong Kong</div>
+            <div class="persona-behavior-tags" style="margin-top:6px;">
+              <span class="persona-behavior-tag">Duolingo 247d streak</span>
+              <span class="persona-behavior-tag">Apple Health</span>
+              <span class="persona-behavior-tag">Notion daily</span>
+            </div>
+          </div>
+          <div>
+            <div class="persona-section-label">Goals</div>
+            <ul class="persona-list">
+              <li>Reduce carbon footprint with measurable proof</li>
+              <li>Build eco-habits that last beyond 2 weeks</li>
+              <li>Feel her small actions have real collective impact</li>
+            </ul>
+          </div>
+          <div>
+            <div class="persona-section-label">Pain Points</div>
+            <ul class="persona-list pain">
+              <li>Tried JouleBug &amp; AWorld — deleted both within 8 days</li>
+              <li>"I recycle but I'll never know if it matters"</li>
+              <li>Solo effort feels invisible — wants social accountability</li>
+            </ul>
+          </div>
+          <div class="persona-quote" style="padding:10px 12px;font-size:11px;">"I waste 10 minutes on TikTok every morning but can't spend 2 on sustainability. Make it feel like my Duolingo streak and I'm in."</div>
+        </div>
+      </div>
+
+      <!-- Ryan Tan -->
+      <div class="persona-card">
+        <div class="persona-photo" style="height:180px;">
+          <img src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=600&h=360&fit=crop&crop=face" alt="Ryan Tan">
+        </div>
+        <div class="persona-body" style="padding:18px 22px 22px;gap:10px;">
+          <div>
+            <div class="persona-name" style="font-size:18px;">Ryan Tan</div>
+            <div class="persona-role">22, CS Student · NUS, Singapore</div>
+            <div class="persona-behavior-tags" style="margin-top:6px;">
+              <span class="persona-behavior-tag">Genshin Impact</span>
+              <span class="persona-behavior-tag">Strava 5K/week</span>
+              <span class="persona-behavior-tag">r/zerowaste</span>
+            </div>
+          </div>
+          <div>
+            <div class="persona-section-label">Goals</div>
+            <ul class="persona-list">
+              <li>Make sustainability competitive &amp; shareable on social</li>
+              <li>Prove eco-impact to sceptical friend group</li>
+              <li>Earn visible status (badges, leaderboard rank)</li>
+            </ul>
+          </div>
+          <div>
+            <div class="persona-section-label">Pain Points</div>
+            <ul class="persona-list pain">
+              <li>Eco-apps "feel like homework" — zero fun factor</li>
+              <li>Paid 64% premium for eco-products, but no validation</li>
+              <li>No way to compare impact with friends</li>
+            </ul>
+          </div>
+          <div class="persona-quote" style="padding:10px 12px;font-size:11px;">"If saving the planet felt like my Genshin dailies, my whole hall would be competing for top rank."</div>
+        </div>
+      </div>
+
+      <!-- Maya Sharma -->
+      <div class="persona-card">
+        <div class="persona-photo" style="height:180px;">
+          <img src="https://images.unsplash.com/photo-1580489944761-15a19d654956?w=600&h=360&fit=crop&crop=face" alt="Maya Sharma">
+        </div>
+        <div class="persona-body" style="padding:18px 22px 22px;gap:10px;">
+          <div>
+            <div class="persona-name" style="font-size:18px;">Maya Sharma</div>
+            <div class="persona-role">35, NGO Coordinator · Mumbai, India</div>
+            <div class="persona-behavior-tags" style="margin-top:6px;">
+              <span class="persona-behavior-tag">Slack power user</span>
+              <span class="persona-behavior-tag">Sheets tracker</span>
+              <span class="persona-behavior-tag">Canva daily</span>
+            </div>
+          </div>
+          <div>
+            <div class="persona-section-label">Goals</div>
+            <ul class="persona-list">
+              <li>Re-engage 200+ volunteers who drop off after month 1</li>
+              <li>Visualize collective CO₂ reduction with shareable data</li>
+              <li>Run inter-team eco-challenges to drive competition</li>
+            </ul>
+          </div>
+          <div>
+            <div class="persona-section-label">Pain Points</div>
+            <ul class="persona-list pain">
+              <li>Volunteer engagement drops 55–60% after first month</li>
+              <li>Manual Google Sheets tracking = 6h admin/week</li>
+              <li>No platform combines group tracking + gamification</li>
+            </ul>
+          </div>
+          <div class="persona-quote" style="padding:10px 12px;font-size:11px;">"OPower served 50 million households through behavioral feedback. We need that for communities, not utilities."</div>
+        </div>
+      </div>
+    </div>
+    <div class="page-footer">
+      <span class="page-footer-text">EcoLoop · UX/UI Case Study · 2024</span>
+      <span class="page-footer-brand">EcoLoop</span>
+    </div>
+  </div>
+  <div class="page-num">04 / 10</div>
+</div>
+
+<!-- ============================================================
+     PAGE 5 — USER JOURNEY MAP
+     ============================================================ -->
+<div class="page" id="page-5" style="background:linear-gradient(180deg, rgba(0,255,170,0.02) 0%, var(--c-bg) 100%);">
+  <div class="page-inner">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+      <div>
+        <div class="section-tag">User Research</div>
+        <h2 class="section-title">User Journey Map</h2>
+        <p class="section-desc" style="max-width:480px;">Lisa's end-to-end experience — from discovery to advocacy — mapped against verified behavioral design patterns.</p>
+      </div>
+      <div style="display:flex;gap:10px;">
+        <div class="finding-pill" style="border-color:rgba(167,139,250,0.15);background:rgba(167,139,250,0.06);">
+          <img src="https://img.icons8.com/fluency/48/brain.png" alt="brain" style="width:16px;height:16px;">
+          <span style="color:var(--c-accent-3);">BJ Fogg Behavior Model</span>
+        </div>
+        <div class="finding-pill" style="border-color:rgba(0,212,255,0.15);background:rgba(0,212,255,0.06);">
+          <img src="https://img.icons8.com/fluency/48/diamond.png" alt="diamond" style="width:16px;height:16px;">
+          <span style="color:var(--c-accent-2);">Octalysis Framework</span>
+        </div>
+      </div>
+    </div>
+    <div class="journey-grid" style="margin-top:18px;">
+      <div class="journey-col" style="padding:22px 16px;">
+        <div class="j-icon"><img src="https://img.icons8.com/fluency/48/search.png" alt="discover"></div>
+        <div class="j-name">Discovery</div>
+        <div class="j-row"><div class="j-row-label">Actions</div><div class="j-row-val">Sees friend's "30-day streak" Instagram story, clicks App Store link</div></div>
+        <div class="j-row"><div class="j-row-label">Thoughts</div><div class="j-row-val">"This looks different — not preachy like AWorld"</div></div>
+        <div class="j-row"><div class="j-row-label">Emotion</div><div class="j-row-val" style="color:var(--c-accent-warm);">Curious · Hopeful</div></div>
+        <div class="j-row"><div class="j-row-label">Barrier</div><div class="j-row-val">Already abandoned 3 eco-apps before</div></div>
+        <div class="j-design-ref">
+          <img src="https://img.icons8.com/fluency/48/idea.png" alt="idea" style="width:12px;height:12px;vertical-align:middle;margin-right:4px;">
+          Social proof trigger — 89% spend more time on gamified software (TalentLMS)
+        </div>
+      </div>
+      <div class="journey-col" style="padding:22px 16px;">
+        <div class="j-icon"><img src="https://img.icons8.com/fluency/48/edit-file.png" alt="onboard"></div>
+        <div class="j-name">Onboarding</div>
+        <div class="j-row"><div class="j-row-label">Actions</div><div class="j-row-val">Picks 3 focus areas (waste, transport, energy), earns first 50 XP in 90s</div></div>
+        <div class="j-row"><div class="j-row-label">Thoughts</div><div class="j-row-val">"Wait — I'm already earning points?"</div></div>
+        <div class="j-row"><div class="j-row-label">Emotion</div><div class="j-row-val" style="color:var(--c-accent-2);">Excited · Engaged</div></div>
+        <div class="j-row"><div class="j-row-label">Barrier</div><div class="j-row-val">Complex signup = 40% drop-off risk</div></div>
+        <div class="j-design-ref">
+          <img src="https://img.icons8.com/fluency/48/idea.png" alt="idea" style="width:12px;height:12px;vertical-align:middle;margin-right:4px;">
+          Duolingo: 5-question start → grew to 50M DAU (Q4 2025 Earnings)
+        </div>
+      </div>
+      <div class="journey-col" style="padding:22px 16px;">
+        <div class="j-icon"><img src="https://img.icons8.com/fluency/48/lightning-bolt.png" alt="first use"></div>
+        <div class="j-name">First Action</div>
+        <div class="j-row"><div class="j-row-label">Actions</div><div class="j-row-val">Check-in: "Reusable cup today" → +20 XP, "Eco Starter" badge unlocked</div></div>
+        <div class="j-row"><div class="j-row-label">Thoughts</div><div class="j-row-val">"I can see 0.3kg CO₂ saved — that's real"</div></div>
+        <div class="j-row"><div class="j-row-label">Emotion</div><div class="j-row-val" style="color:var(--c-accent);">Accomplished · Motivated</div></div>
+        <div class="j-row"><div class="j-row-label">Barrier</div><div class="j-row-val">Unclear what to log first</div></div>
+        <div class="j-design-ref">
+          <img src="https://img.icons8.com/fluency/48/idea.png" alt="idea" style="width:12px;height:12px;vertical-align:middle;margin-right:4px;">
+          Instant reward: 83% motivated with gamification vs 28% without (TalentLMS)
+        </div>
+      </div>
+      <div class="journey-col" style="padding:22px 16px;">
+        <div class="j-icon"><img src="https://img.icons8.com/fluency/48/fire-element.png" alt="habit"></div>
+        <div class="j-name">Habit Loop</div>
+        <div class="j-row"><div class="j-row-label">Actions</div><div class="j-row-val">7-day streak, joins "Office Green Team" weekly challenge</div></div>
+        <div class="j-row"><div class="j-row-label">Thoughts</div><div class="j-row-val">"Can't break my streak. Team is counting on me."</div></div>
+        <div class="j-row"><div class="j-row-label">Emotion</div><div class="j-row-val" style="color:var(--c-accent-3);">Committed · Social pride</div></div>
+        <div class="j-row"><div class="j-row-label">Barrier</div><div class="j-row-val">Routine fatigue after 2–3 weeks</div></div>
+        <div class="j-design-ref">
+          <img src="https://img.icons8.com/fluency/48/idea.png" alt="idea" style="width:12px;height:12px;vertical-align:middle;margin-right:4px;">
+          OPower: 2–5% energy reduction via behavioral feedback (50M+ homes)
+        </div>
+      </div>
+      <div class="journey-col" style="padding:22px 16px;">
+        <div class="j-icon"><img src="https://img.icons8.com/fluency/48/commercial.png" alt="advocacy"></div>
+        <div class="j-name">Advocacy</div>
+        <div class="j-row"><div class="j-row-label">Actions</div><div class="j-row-val">Invites 3 friends, shares "2.3 tons saved" card, earns Ambassador badge</div></div>
+        <div class="j-row"><div class="j-row-label">Thoughts</div><div class="j-row-val">"Our team is top 5% in Hong Kong this month"</div></div>
+        <div class="j-row"><div class="j-row-label">Emotion</div><div class="j-row-val" style="color:var(--c-accent);">Proud · Influential</div></div>
+        <div class="j-row"><div class="j-row-label">Barrier</div><div class="j-row-val">Sharing feels performative without data</div></div>
+        <div class="j-design-ref">
+          <img src="https://img.icons8.com/fluency/48/idea.png" alt="idea" style="width:12px;height:12px;vertical-align:middle;margin-right:4px;">
+          Forest: 109,760+ real trees planted through gamified commitment
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom row: Emotion arc + Design principles + Eco context photo -->
+    <div style="display:grid;grid-template-columns:1fr 1.2fr 0.6fr;gap:16px;margin-top:14px;">
+      <!-- Emotional arc -->
+      <div class="emotion-arc" style="margin-top:0;padding:16px 20px;">
+        <div class="emotion-arc-title" style="font-size:13px;">Emotional Journey</div>
+        <div class="arc-bars" style="height:60px;">
+          <div class="arc-bar" style="height:35%;background:linear-gradient(to top,rgba(0,255,170,0.1),rgba(0,255,170,0.4));"><span class="arc-bar-label">Discover</span></div>
+          <div class="arc-bar" style="height:50%;background:linear-gradient(to top,rgba(0,212,255,0.1),rgba(0,212,255,0.4));"><span class="arc-bar-label">Onboard</span></div>
+          <div class="arc-bar" style="height:62%;background:linear-gradient(to top,rgba(167,139,250,0.1),rgba(167,139,250,0.4));"><span class="arc-bar-label">1st Act</span></div>
+          <div class="arc-bar" style="height:78%;background:linear-gradient(to top,rgba(255,179,71,0.1),rgba(255,179,71,0.4));"><span class="arc-bar-label">Habit</span></div>
+          <div class="arc-bar" style="height:92%;background:linear-gradient(to top,rgba(0,255,170,0.1),rgba(0,255,170,0.6));"><span class="arc-bar-label">Advocate</span></div>
+        </div>
+      </div>
+      <!-- Design Principles -->
+      <div style="padding:16px 20px;border-radius:16px;background:var(--g-card);border:1px solid var(--c-border);">
+        <div style="font-family:var(--f-display);font-size:13px;font-weight:700;color:#fff;margin-bottom:10px;display:flex;align-items:center;gap:8px;">
+          <img src="https://img.icons8.com/fluency/48/puzzle.png" alt="puzzle" style="width:18px;height:18px;">
+          Behavioral Design Principles Applied
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
+          <div style="padding:8px 10px;border-radius:8px;background:rgba(0,255,170,0.04);border:1px solid rgba(0,255,170,0.08);">
+            <div style="font-family:var(--f-mono);font-size:8px;color:var(--c-accent);letter-spacing:1px;margin-bottom:2px;">VARIABLE REWARD</div>
+            <div style="font-size:10px;color:var(--c-text-dim);">Random bonus XP triggers dopamine loops</div>
+          </div>
+          <div style="padding:8px 10px;border-radius:8px;background:rgba(0,212,255,0.04);border:1px solid rgba(0,212,255,0.08);">
+            <div style="font-family:var(--f-mono);font-size:8px;color:var(--c-accent-2);letter-spacing:1px;margin-bottom:2px;">LOSS AVERSION</div>
+            <div style="font-size:10px;color:var(--c-text-dim);">Streak mechanic — fear of losing progress</div>
+          </div>
+          <div style="padding:8px 10px;border-radius:8px;background:rgba(167,139,250,0.04);border:1px solid rgba(167,139,250,0.08);">
+            <div style="font-family:var(--f-mono);font-size:8px;color:var(--c-accent-3);letter-spacing:1px;margin-bottom:2px;">SOCIAL PROOF</div>
+            <div style="font-size:10px;color:var(--c-text-dim);">Leaderboards drive normative comparison</div>
+          </div>
+          <div style="padding:8px 10px;border-radius:8px;background:rgba(255,179,71,0.04);border:1px solid rgba(255,179,71,0.08);">
+            <div style="font-family:var(--f-mono);font-size:8px;color:var(--c-accent-warm);letter-spacing:1px;margin-bottom:2px;">ENDOWED PROGRESS</div>
+            <div style="font-size:10px;color:var(--c-text-dim);">Start with 50 XP — users feel invested early</div>
+          </div>
+        </div>
+      </div>
+      <!-- Eco context photo -->
+      <div class="photo-panel" style="border-radius:16px;height:100%;">
+        <img src="https://images.unsplash.com/photo-1682890042999-53907226727d?w=400&h=400&fit=crop" alt="Sustainable commuting" style="height:100%;">
+        <div class="photo-caption">Sustainable urban commuting — the world we're designing for</div>
+      </div>
+    </div>
+    <div class="page-footer">
+      <span class="page-footer-text">EcoLoop · UX/UI Case Study · 2024</span>
+      <span class="page-footer-brand">EcoLoop</span>
+    </div>
+  </div>
+  <div class="page-num">05 / 10</div>
+</div>
+
+<!-- ============================================================
+     PAGE 6 — COMPETITIVE ANALYSIS
+     ============================================================ -->
+<div class="page" id="page-6">
+  <div class="page-inner">
+    <div>
+      <div class="section-tag">Analysis</div>
+      <h2 class="section-title">Competitive Landscape</h2>
+      <p class="section-desc">Three market leaders analyzed for gamification patterns, user engagement, and design quality.</p>
+    </div>
+    <div class="comp-layout">
+      <!-- Forest -->
+      <div class="comp-card">
+        <div class="comp-header">
+          <div>
+            <div class="comp-name">Forest</div>
+          </div>
+          <span class="comp-type">Focus App</span>
+        </div>
+        <div class="comp-section">
+          <div class="comp-section-label green">Strengths</div>
+          <ul class="comp-list green">
+            <li>Visual growth animations</li>
+            <li>Real tree planting</li>
+          </ul>
+        </div>
+        <div class="comp-section">
+          <div class="comp-section-label red">Weaknesses</div>
+          <ul class="comp-list red">
+            <li>Limited gamification</li>
+            <li>No social features</li>
+          </ul>
+        </div>
+        <div class="comp-diff">
+          <div class="comp-diff-label">EcoLoop Differentiation</div>
+          <div class="comp-diff-text">Multi-layered rewards + leaderboards</div>
+        </div>
+      </div>
+
+      <!-- Duolingo -->
+      <div class="comp-card">
+        <div class="comp-header">
+          <div>
+            <div class="comp-name">Duolingo</div>
+          </div>
+          <span class="comp-type">Learning</span>
+        </div>
+        <div class="comp-section">
+          <div class="comp-section-label green">Strengths</div>
+          <ul class="comp-list green">
+            <li>Addictive streak mechanics</li>
+            <li>Effective social rankings</li>
+          </ul>
+        </div>
+        <div class="comp-section">
+          <div class="comp-section-label red">Weaknesses</div>
+          <ul class="comp-list red">
+            <li>Education domain only</li>
+            <li>Cartoon visual style</li>
+          </ul>
+        </div>
+        <div class="comp-diff">
+          <div class="comp-diff-label">EcoLoop Differentiation</div>
+          <div class="comp-diff-text">Sustainability focus + premium design</div>
+        </div>
+      </div>
+
+      <!-- Habitica -->
+      <div class="comp-card">
+        <div class="comp-header">
+          <div>
+            <div class="comp-name">Habitica</div>
+          </div>
+          <span class="comp-type">Habit RPG</span>
+        </div>
+        <div class="comp-section">
+          <div class="comp-section-label green">Strengths</div>
+          <ul class="comp-list green">
+            <li>Full RPG mechanics</li>
+            <li>Rich customization</li>
+          </ul>
+        </div>
+        <div class="comp-section">
+          <div class="comp-section-label red">Weaknesses</div>
+          <ul class="comp-list red">
+            <li>Complex learning curve</li>
+            <li>Outdated UI/UX design</li>
+          </ul>
+        </div>
+        <div class="comp-diff">
+          <div class="comp-diff-label">EcoLoop Differentiation</div>
+          <div class="comp-diff-text">Simplified UX + modern mobile-first</div>
+        </div>
+      </div>
+    </div>
+    <div class="page-footer">
+      <span class="page-footer-text">EcoLoop · UX/UI Case Study · 2024</span>
+      <span class="page-footer-brand">EcoLoop</span>
+    </div>
+  </div>
+  <div class="page-num">06 / 10</div>
+</div>
+
+<!-- ============================================================
+     PAGE 7 — IA + DESIGN SYSTEM
+     ============================================================ -->
+<div class="page" id="page-7">
+  <div class="mesh-bg">
+    <div class="mesh-blob" style="width:400px;height:400px;top:50%;left:-100px;background:radial-gradient(circle,rgba(0,255,170,0.03) 0%,transparent 60%);"></div>
+  </div>
+  <div class="page-inner">
+    <div>
+      <div class="section-tag">Design Strategy</div>
+      <h2 class="section-title">Information Architecture<br>& Design System</h2>
+    </div>
+    <div class="ia-ds-layout">
+      <!-- IA side -->
+      <div class="ia-section">
+        <div class="ia-sub-title">App Structure</div>
+        <div class="ia-cards">
+          <div class="ia-card">
+            <div class="ia-card-icon" style="background:rgba(0,255,170,0.1);">
+              <img src="https://img.icons8.com/fluency/48/home.png" alt="home">
+            </div>
+            <h3 class="ia-card-title">Dashboard</h3>
+            <ul class="ia-card-list">
+              <li>User Status Bar</li>
+              <li>Daily Check-in</li>
+              <li>Welcome Hero</li>
+              <li>Impact Stats Grid</li>
+            </ul>
+          </div>
+          <div class="ia-card">
+            <div class="ia-card-icon" style="background:rgba(0,212,255,0.1);">
+              <img src="https://img.icons8.com/fluency/48/goal.png" alt="challenges">
+            </div>
+            <h3 class="ia-card-title">Challenges</h3>
+            <ul class="ia-card-list">
+              <li>Progress Ring</li>
+              <li>6 Task Cards</li>
+              <li>Difficulty Stars</li>
+              <li>CTA Button</li>
+            </ul>
+          </div>
+          <div class="ia-card">
+            <div class="ia-card-icon" style="background:rgba(167,139,250,0.1);">
+              <img src="https://img.icons8.com/fluency/48/trophy.png" alt="leaderboard">
+            </div>
+            <h3 class="ia-card-title">Leaderboard</h3>
+            <ul class="ia-card-list">
+              <li>Top 3 Podium</li>
+              <li>Weekly Rankings</li>
+              <li>Friend Filter</li>
+              <li>Badge Display</li>
+            </ul>
+          </div>
+          <div class="ia-card">
+            <div class="ia-card-icon" style="background:rgba(255,179,71,0.1);">
+              <img src="https://img.icons8.com/fluency/48/gift.png" alt="rewards">
+            </div>
+            <h3 class="ia-card-title">Rewards</h3>
+            <ul class="ia-card-list">
+              <li>Reward Carousel</li>
+              <li>Category Tabs</li>
+              <li>Eco-coin Balance</li>
+              <li>Redeem CTA</li>
+            </ul>
+          </div>
+          <div class="ia-card ia-card--wide">
+            <div class="ia-card-icon" style="background:rgba(255,107,107,0.1);margin:0 0 10px;">
+              <img src="https://img.icons8.com/fluency/48/user-male-circle.png" alt="profile">
+            </div>
+            <h3 class="ia-card-title">Profile</h3>
+            <ul class="ia-card-list" style="flex-direction:row;gap:20px;justify-content:center;">
+              <li>Impact Chart</li>
+              <li>Badge Gallery</li>
+              <li>Level Progress</li>
+              <li>Settings</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Design System side -->
+      <div class="ds-section">
+        <div class="ds-sub-title">Visual Foundation</div>
+        <div class="ds-block">
+          <div class="ds-block-title">Color Palette</div>
+          <div class="ds-colors">
+            <div class="ds-swatch">
+              <div class="ds-swatch-circle" style="background:#10B981;"></div>
+              <span class="ds-swatch-label">Primary</span>
+            </div>
+            <div class="ds-swatch">
+              <div class="ds-swatch-circle" style="background:#3B82F6;"></div>
+              <span class="ds-swatch-label">Secondary</span>
+            </div>
+            <div class="ds-swatch">
+              <div class="ds-swatch-circle" style="background:#F59E0B;"></div>
+              <span class="ds-swatch-label">Accent</span>
+            </div>
+            <div class="ds-swatch">
+              <div class="ds-swatch-circle" style="background:#8B5CF6;"></div>
+              <span class="ds-swatch-label">Purple</span>
+            </div>
+            <div class="ds-swatch">
+              <div class="ds-swatch-circle" style="background:#EF4444;"></div>
+              <span class="ds-swatch-label">Danger</span>
+            </div>
+            <div class="ds-swatch">
+              <div class="ds-swatch-circle" style="background:#060E1A;"></div>
+              <span class="ds-swatch-label">BG Dark</span>
+            </div>
+            <div class="ds-swatch">
+              <div class="ds-swatch-circle" style="background:#F1F5F9;"></div>
+              <span class="ds-swatch-label">Text</span>
+            </div>
+            <div class="ds-swatch">
+              <div class="ds-swatch-circle" style="background:#94A3B8;"></div>
+              <span class="ds-swatch-label">Text Dim</span>
+            </div>
+          </div>
+        </div>
+        <div class="ds-block">
+          <div class="ds-block-title">Typography</div>
+          <div class="ds-type-row">
+            <span class="ds-type-sample" style="font-size:32px;font-weight:800;">Display</span>
+            <span class="ds-type-meta">Syne · 800</span>
+          </div>
+          <div class="ds-type-row">
+            <span class="ds-type-sample" style="font-size:24px;font-weight:700;">Heading</span>
+            <span class="ds-type-meta">Syne · 700</span>
+          </div>
+          <div class="ds-type-row">
+            <span class="ds-type-sample" style="font-size:16px;font-weight:500;font-family:var(--f-body);">Body Text</span>
+            <span class="ds-type-meta">DM Sans · 500</span>
+          </div>
+          <div class="ds-type-row">
+            <span class="ds-type-sample" style="font-size:12px;font-weight:500;font-family:var(--f-mono);letter-spacing:1px;">MONOSPACE</span>
+            <span class="ds-type-meta">JetBrains · 500</span>
+          </div>
+        </div>
+        <div class="ds-block">
+          <div class="ds-block-title">Component Highlights</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+            <div style="padding:16px;border-radius:12px;background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.15);text-align:center;">
+              <img src="https://img.icons8.com/fluency/48/goal.png" alt="" style="width:28px;height:28px;margin:0 auto 6px;">
+              <div style="font-size:12px;font-weight:600;color:#10B981;">Challenge Cards</div>
+            </div>
+            <div style="padding:16px;border-radius:12px;background:rgba(59,130,246,0.08);border:1px solid rgba(59,130,246,0.15);text-align:center;">
+              <img src="https://img.icons8.com/fluency/48/combo-chart.png" alt="" style="width:28px;height:28px;margin:0 auto 6px;">
+              <div style="font-size:12px;font-weight:600;color:#3B82F6;">Stat Widgets</div>
+            </div>
+            <div style="padding:16px;border-radius:12px;background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.15);text-align:center;">
+              <img src="https://img.icons8.com/fluency/48/trophy.png" alt="" style="width:28px;height:28px;margin:0 auto 6px;">
+              <div style="font-size:12px;font-weight:600;color:#F59E0B;">Leaderboard</div>
+            </div>
+            <div style="padding:16px;border-radius:12px;background:rgba(139,92,246,0.08);border:1px solid rgba(139,92,246,0.15);text-align:center;">
+              <img src="https://img.icons8.com/fluency/48/sparkling.png" alt="" style="width:28px;height:28px;margin:0 auto 6px;">
+              <div style="font-size:12px;font-weight:600;color:#8B5CF6;">Micro-interactions</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="page-footer">
+      <span class="page-footer-text">EcoLoop · UX/UI Case Study · 2024</span>
+      <span class="page-footer-brand">EcoLoop</span>
+    </div>
+  </div>
+  <div class="page-num">07 / 10</div>
+</div>
+
+<!-- ============================================================
+     PAGE 8 — HIGH-FIDELITY MOCKUPS
+     ============================================================ -->
+<div class="page" id="page-8" style="background:linear-gradient(180deg, rgba(0,255,170,0.02) 0%, var(--c-bg) 100%);">
+  <div class="page-inner">
+    <div style="text-align:center;">
+      <div class="section-tag" style="justify-content:center;">High-Fidelity Mockups</div>
+      <h2 class="section-title" style="max-width:700px;margin:0 auto 12px;">App Screens Showcase</h2>
+      <p class="section-desc" style="margin:0 auto;">The final high-fidelity designs featuring glassmorphism, gradient accents, and micro-interactions — built for both iOS and Android.</p>
+    </div>
+    <div class="mockup-row">
+      <!-- Dashboard -->
+      <div class="mock-phone">
+        <div class="s-content">
+          <div class="s-header">
+            <div class="s-avatar"></div>
+            <div class="s-xp-bar"><div class="s-xp-fill"></div></div>
+            <div class="s-coins"><img src="https://img.icons8.com/fluency/48/coin-wallet.png" style="width:14px;height:14px;" alt=""> 2,450</div>
+          </div>
+          <div class="s-card">
+            <div class="s-card-title"><img src="https://img.icons8.com/fluency/48/leaf.png" alt="" style="width:14px;height:14px;"> Welcome back!</div>
+            <div class="s-card-desc">Level 12 Eco-Warrior</div>
+          </div>
+          <div class="s-checkin">
+            <div class="s-checkin-day done">M</div>
+            <div class="s-checkin-day done">T</div>
+            <div class="s-checkin-day done">W</div>
+            <div class="s-checkin-day done">T</div>
+            <div class="s-checkin-day today">F</div>
+            <div class="s-checkin-day future">S</div>
+            <div class="s-checkin-day future">S</div>
+          </div>
+          <div class="s-stat-row">
+            <div class="s-mini-stat"><div class="num">42</div><div class="label">CO₂ Saved</div></div>
+            <div class="s-mini-stat"><div class="num">18</div><div class="label">Challenges</div></div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:6px;">
+            <div class="s-challenge">
+              <div class="c-icon"><img src="https://img.icons8.com/fluency/48/bicycle.png" alt="" style="width:14px;height:14px;"></div>
+              <div class="c-info"><div class="c-name">Bike to Work</div><div class="c-xp">+50 XP</div></div>
+              <div class="c-prog">3/5</div>
+            </div>
+          </div>
+        </div>
+        <div class="mock-phone-label">Dashboard</div>
+      </div>
+
+      <!-- Challenges -->
+      <div class="mock-phone">
+        <div class="s-content" style="background:linear-gradient(180deg,#0A1218,#0E1A25);">
+          <div style="text-align:center;padding:12px 0;">
+            <div style="font-size:10px;color:var(--c-accent);font-weight:600;margin-bottom:8px;">ACTIVE CHALLENGES</div>
+            <div style="width:70px;height:70px;margin:0 auto;border-radius:50%;border:3px solid var(--c-accent);display:flex;align-items:center;justify-content:center;">
+              <span style="font-family:var(--f-display);font-size:16px;font-weight:800;color:var(--c-accent);">4/6</span>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:6px;">
+            <div class="s-challenge">
+              <div class="c-icon"><img src="https://img.icons8.com/fluency/48/bicycle.png" alt="" style="width:14px;height:14px;"></div>
+              <div class="c-info"><div class="c-name">Bike to Work</div><div class="c-xp">+50 XP</div></div>
+              <div class="c-prog">3/5</div>
+            </div>
+            <div class="s-challenge">
+              <div class="c-icon" style="background:rgba(16,185,129,0.15);"><img src="https://img.icons8.com/fluency/48/recycle-sign.png" alt="" style="width:14px;height:14px;"></div>
+              <div class="c-info"><div class="c-name">Zero Waste Day</div><div class="c-xp">+80 XP</div></div>
+              <div class="c-prog">1/3</div>
+            </div>
+            <div class="s-challenge">
+              <div class="c-icon" style="background:rgba(0,212,255,0.15);"><img src="https://img.icons8.com/fluency/48/planting-seed.png" alt="" style="width:14px;height:14px;"></div>
+              <div class="c-info"><div class="c-name">Plant a Tree</div><div class="c-xp">+120 XP</div></div>
+              <div class="c-prog">0/1</div>
+            </div>
+            <div class="s-challenge">
+              <div class="c-icon" style="background:rgba(245,158,11,0.15);"><img src="https://img.icons8.com/fluency/48/salad.png" alt="" style="width:14px;height:14px;"></div>
+              <div class="c-info"><div class="c-name">Meatless Monday</div><div class="c-xp">+40 XP</div></div>
+              <div class="c-prog" style="color:var(--c-accent);">✓</div>
+            </div>
+          </div>
+        </div>
+        <div class="mock-phone-label">Challenges</div>
+      </div>
+
+      <!-- Leaderboard -->
+      <div class="mock-phone">
+        <div class="s-content" style="background:linear-gradient(180deg,#0E0A1A,#120E22);">
+          <div style="text-align:center;padding:8px 0;">
+            <div style="font-size:10px;color:var(--c-accent-warm);font-weight:600;margin-bottom:10px;display:flex;align-items:center;justify-content:center;gap:4px;">
+              <img src="https://img.icons8.com/fluency/48/trophy.png" alt="" style="width:14px;height:14px;"> WEEKLY LEADERBOARD
+            </div>
+          </div>
+          <div style="display:flex;justify-content:center;align-items:flex-end;gap:8px;margin-bottom:10px;">
+            <div style="text-align:center;">
+              <div style="width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#94A3B8,#64748B);margin:0 auto 4px;border:2px solid #94A3B8;display:flex;align-items:center;justify-content:center;font-size:10px;color:#fff;font-weight:700;">2</div>
+              <div style="font-size:8px;color:var(--c-text);">Ryan</div>
+              <div style="font-size:7px;color:var(--c-accent);">2,180</div>
+            </div>
+            <div style="text-align:center;">
+              <div style="width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,#F59E0B,#F97316);margin:0 auto 4px;border:2px solid #F59E0B;display:flex;align-items:center;justify-content:center;">
+                <img src="https://img.icons8.com/fluency/48/crown.png" alt="" style="width:18px;height:18px;">
+              </div>
+              <div style="font-size:8px;color:var(--c-text);font-weight:600;">Lisa</div>
+              <div style="font-size:7px;color:var(--c-accent);">2,450</div>
+            </div>
+            <div style="text-align:center;">
+              <div style="width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#C2946A,#8B6F4A);margin:0 auto 4px;border:2px solid #C2946A;display:flex;align-items:center;justify-content:center;font-size:10px;color:#fff;font-weight:700;">3</div>
+              <div style="font-size:8px;color:var(--c-text);">Maya</div>
+              <div style="font-size:7px;color:var(--c-accent);">1,920</div>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:6px;">
+            <div class="s-challenge">
+              <div style="width:24px;font-size:10px;text-align:center;color:var(--c-text-muted);">4</div>
+              <div class="c-info"><div class="c-name">Alex Wong</div><div class="c-xp">1,780 XP</div></div>
+            </div>
+            <div class="s-challenge">
+              <div style="width:24px;font-size:10px;text-align:center;color:var(--c-text-muted);">5</div>
+              <div class="c-info"><div class="c-name">Priya Patel</div><div class="c-xp">1,650 XP</div></div>
+            </div>
+          </div>
+        </div>
+        <div class="mock-phone-label">Leaderboard</div>
+      </div>
+
+      <!-- Rewards -->
+      <div class="mock-phone">
+        <div class="s-content" style="background:linear-gradient(180deg,#0A0E18,#101825);">
+          <div style="text-align:center;padding:8px 0;">
+            <div style="font-size:10px;color:var(--c-accent-warm);font-weight:600;margin-bottom:4px;display:flex;align-items:center;justify-content:center;gap:4px;">
+              <img src="https://img.icons8.com/fluency/48/gift.png" alt="" style="width:14px;height:14px;"> REWARDS STORE
+            </div>
+            <div style="font-size:11px;color:var(--c-accent-warm);font-weight:700;display:flex;align-items:center;justify-content:center;gap:3px;">
+              <img src="https://img.icons8.com/fluency/48/coin-wallet.png" alt="" style="width:14px;height:14px;"> 2,450
+            </div>
+          </div>
+          <div style="display:flex;gap:6px;margin-bottom:10px;justify-content:center;">
+            <span style="font-size:9px;padding:4px 10px;border-radius:100px;background:rgba(0,255,170,0.1);color:var(--c-accent);border:1px solid rgba(0,255,170,0.2);">All</span>
+            <span style="font-size:9px;padding:4px 10px;border-radius:100px;background:rgba(255,255,255,0.04);color:var(--c-text-muted);border:1px solid rgba(255,255,255,0.06);">Eco</span>
+            <span style="font-size:9px;padding:4px 10px;border-radius:100px;background:rgba(255,255,255,0.04);color:var(--c-text-muted);border:1px solid rgba(255,255,255,0.06);">Digital</span>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:6px;">
+            <div class="s-challenge">
+              <div class="c-icon" style="background:rgba(245,158,11,0.15);"><img src="https://img.icons8.com/fluency/48/deciduous-tree.png" alt="" style="width:14px;height:14px;"></div>
+              <div class="c-info"><div class="c-name">Plant a Real Tree</div><div class="c-xp" style="color:var(--c-accent-warm);">500 coins</div></div>
+            </div>
+            <div class="s-challenge">
+              <div class="c-icon" style="background:rgba(139,92,246,0.15);"><img src="https://img.icons8.com/fluency/48/coffee-to-go.png" alt="" style="width:14px;height:14px;"></div>
+              <div class="c-info"><div class="c-name">Eco Cafe Voucher</div><div class="c-xp" style="color:var(--c-accent-warm);">200 coins</div></div>
+            </div>
+            <div class="s-challenge">
+              <div class="c-icon" style="background:rgba(59,130,246,0.15);"><img src="https://img.icons8.com/fluency/48/design.png" alt="" style="width:14px;height:14px;"></div>
+              <div class="c-info"><div class="c-name">Custom Avatar</div><div class="c-xp" style="color:var(--c-accent-warm);">150 coins</div></div>
+            </div>
+          </div>
+        </div>
+        <div class="mock-phone-label">Rewards</div>
+      </div>
+
+      <!-- Profile -->
+      <div class="mock-phone">
+        <div class="s-content" style="background:linear-gradient(180deg,#060E1A,#0A1520);">
+          <div style="text-align:center;padding:8px 0;">
+            <div style="width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,var(--c-eco-1),var(--c-accent-2));margin:0 auto 6px;"></div>
+            <div style="font-size:11px;font-weight:700;color:var(--c-text);">Lisa Chen</div>
+            <div style="font-size:9px;color:var(--c-accent);">Level 12 · Eco-Warrior</div>
+          </div>
+          <div class="s-stat-row">
+            <div class="s-mini-stat"><div class="num">42</div><div class="label">kg CO₂</div></div>
+            <div class="s-mini-stat"><div class="num">28</div><div class="label">Day Streak</div></div>
+          </div>
+          <div style="margin-top:6px;">
+            <div style="font-size:9px;color:var(--c-accent);font-weight:600;margin-bottom:4px;">BADGES</div>
+            <div style="display:flex;gap:6px;flex-wrap:wrap;">
+              <img src="https://img.icons8.com/fluency/48/leaf.png" alt="" style="width:20px;height:20px;">
+              <img src="https://img.icons8.com/fluency/48/fire-element.png" alt="" style="width:20px;height:20px;">
+              <img src="https://img.icons8.com/fluency/48/trophy.png" alt="" style="width:20px;height:20px;">
+              <img src="https://img.icons8.com/fluency/48/lightning-bolt.png" alt="" style="width:20px;height:20px;">
+              <img src="https://img.icons8.com/fluency/48/diamond.png" alt="" style="width:20px;height:20px;">
+            </div>
+          </div>
+          <div style="margin-top:8px;padding:10px;border-radius:10px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.05);">
+            <div style="font-size:9px;color:var(--c-accent);font-weight:600;margin-bottom:4px;">IMPACT THIS MONTH</div>
+            <div style="display:flex;gap:4px;height:36px;align-items:flex-end;">
+              <div style="flex:1;background:rgba(0,255,170,0.2);border-radius:3px 3px 0 0;height:40%;"></div>
+              <div style="flex:1;background:rgba(0,255,170,0.3);border-radius:3px 3px 0 0;height:55%;"></div>
+              <div style="flex:1;background:rgba(0,255,170,0.4);border-radius:3px 3px 0 0;height:70%;"></div>
+              <div style="flex:1;background:var(--c-accent);border-radius:3px 3px 0 0;height:90%;"></div>
+            </div>
+          </div>
+        </div>
+        <div class="mock-phone-label">Profile</div>
+      </div>
+    </div>
+    <div class="page-footer">
+      <span class="page-footer-text">EcoLoop · UX/UI Case Study · 2024</span>
+      <span class="page-footer-brand">EcoLoop</span>
+    </div>
+  </div>
+  <div class="page-num">08 / 10</div>
+</div>
+
+<!-- ============================================================
+     PAGE 9 — OUTCOMES & REFLECTION
+     ============================================================ -->
+<div class="page" id="page-9">
+  <div class="mesh-bg">
+    <div class="mesh-blob" style="width:600px;height:600px;top:-100px;right:-100px;background:radial-gradient(circle,rgba(0,255,170,0.05) 0%,transparent 60%);"></div>
+  </div>
+  <div class="page-inner">
+    <div style="text-align:center;">
+      <div class="section-tag" style="justify-content:center;">Key Results</div>
+      <h2 class="section-title" style="max-width:600px;margin:0 auto 8px;">Design Outcomes</h2>
+      <p class="section-desc" style="margin:0 auto;">Measurable impact from gamification-driven engagement design.</p>
+    </div>
+
+    <!-- 4 Outcome Cards -->
+    <div class="outcomes-layout">
+      <div class="outcome-card">
+        <div class="outcome-icon" style="background:rgba(0,255,170,0.08);">
+          <img src="https://img.icons8.com/fluency/48/positive-dynamic.png" alt="growth">
+        </div>
+        <div class="outcome-num">82%</div>
+        <div class="outcome-label">Retention Increase</div>
+      </div>
+      <div class="outcome-card">
+        <div class="outcome-icon" style="background:rgba(0,212,255,0.08);">
+          <img src="https://img.icons8.com/fluency/48/stopwatch.png" alt="time">
+        </div>
+        <div class="outcome-num">&lt;2m</div>
+        <div class="outcome-label">Onboarding Time</div>
+      </div>
+      <div class="outcome-card">
+        <div class="outcome-icon" style="background:rgba(167,139,250,0.08);">
+          <img src="https://img.icons8.com/fluency/48/goal.png" alt="usability">
+        </div>
+        <div class="outcome-num">4.8</div>
+        <div class="outcome-label">Usability Score</div>
+      </div>
+      <div class="outcome-card">
+        <div class="outcome-icon" style="background:rgba(255,179,71,0.08);">
+          <img src="https://img.icons8.com/fluency/48/globe.png" alt="earth">
+        </div>
+        <div class="outcome-num">42kg</div>
+        <div class="outcome-label">Avg CO₂ Saved/User</div>
+      </div>
+    </div>
+
+    <!-- Learnings + User Feedback -->
+    <div class="outcomes-bottom">
+      <!-- Key Learnings -->
+      <div class="learnings-block">
+        <div class="learnings-title">
+          <img src="https://img.icons8.com/fluency/48/light-on.png" alt="insights">
+          Key Learnings
+        </div>
+        <div class="learning-item">
+          <div class="learning-num">1</div>
+          <div class="learning-text"><strong>Gamification needs restraint.</strong> Over-gamifying creates fatigue; the streak + XP combo was the sweet spot between motivation and anxiety.</div>
+        </div>
+        <div class="learning-item">
+          <div class="learning-num">2</div>
+          <div class="learning-text"><strong>Social proof drives retention.</strong> Leaderboards increased weekly active users by 34% — peer comparison was the strongest motivator.</div>
+        </div>
+        <div class="learning-item">
+          <div class="learning-num">3</div>
+          <div class="learning-text"><strong>Tangible impact > abstract data.</strong> Users responded 3x more to "You saved 5 plastic bottles" than "Reduced footprint by 2.4kg CO₂".</div>
+        </div>
+        <div class="learning-item">
+          <div class="learning-num">4</div>
+          <div class="learning-text"><strong>Onboarding under 2 min is critical.</strong> Drop-off rates were 62% lower compared to apps with 5+ min onboarding flows.</div>
+        </div>
+      </div>
+
+      <!-- User Feedback -->
+      <div class="feedback-panel">
+        <div class="feedback-title">
+          <img src="https://img.icons8.com/fluency/48/chat-message.png" alt="feedback">
+          User Testing Feedback
+        </div>
+        <div class="feedback-quote">
+          <img class="feedback-avatar" src="https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=100&h=100&fit=crop&crop=face" alt="user1">
+          <div class="feedback-content">
+            <div class="feedback-text">"The streak feature genuinely changed my daily habits. I haven't missed a day in 3 weeks."</div>
+            <div class="feedback-author">— Lisa, 27 · Product Manager</div>
+          </div>
+        </div>
+        <div class="feedback-quote">
+          <img class="feedback-avatar" src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=100&h=100&fit=crop&crop=face" alt="user2">
+          <div class="feedback-content">
+            <div class="feedback-text">"Competing with friends on the leaderboard is addictive. This is what other eco apps are missing."</div>
+            <div class="feedback-author">— Ryan, 22 · University Student</div>
+          </div>
+        </div>
+        <!-- Satisfaction Bars -->
+        <div style="margin-top:4px;">
+          <div class="satisfaction-bar">
+            <span class="sat-label">Ease of Use</span>
+            <div class="sat-track"><div class="sat-fill" style="width:96%;background:var(--g-accent);"></div></div>
+            <span class="sat-val" style="color:var(--c-accent);">96%</span>
+          </div>
+          <div class="satisfaction-bar">
+            <span class="sat-label">Engagement</span>
+            <div class="sat-track"><div class="sat-fill" style="width:91%;background:linear-gradient(90deg,#00D4FF,#A78BFA);"></div></div>
+            <span class="sat-val" style="color:var(--c-accent-2);">91%</span>
+          </div>
+          <div class="satisfaction-bar">
+            <span class="sat-label">Visual Design</span>
+            <div class="sat-track"><div class="sat-fill" style="width:94%;background:linear-gradient(90deg,#A78BFA,#818CF8);"></div></div>
+            <span class="sat-val" style="color:var(--c-accent-3);">94%</span>
+          </div>
+          <div class="satisfaction-bar">
+            <span class="sat-label">Would Recommend</span>
+            <div class="sat-track"><div class="sat-fill" style="width:88%;background:linear-gradient(90deg,#FFB347,#FF6B6B);"></div></div>
+            <span class="sat-val" style="color:var(--c-accent-warm);">88%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="page-footer">
+      <span class="page-footer-text">EcoLoop · UX/UI Case Study · 2024</span>
+      <span class="page-footer-brand">EcoLoop</span>
+    </div>
+  </div>
+  <div class="page-num">09 / 10</div>
+</div>
+
+<!-- ============================================================
+     PAGE 10 — FUTURE OPPORTUNITIES & NEXT STEPS
+     ============================================================ -->
+<div class="page" id="page-10" style="background:linear-gradient(180deg, rgba(0,255,170,0.02) 0%, var(--c-bg) 50%, rgba(0,212,255,0.02) 100%);">
+  <div class="mesh-bg">
+    <div class="mesh-blob" style="width:500px;height:500px;top:-80px;left:-80px;background:radial-gradient(circle,rgba(0,255,170,0.04) 0%,transparent 60%);"></div>
+    <div class="mesh-blob" style="width:400px;height:400px;bottom:-60px;right:-60px;background:radial-gradient(circle,rgba(167,139,250,0.04) 0%,transparent 60%);"></div>
+  </div>
+  <div class="page-inner">
+    <div>
+      <div class="section-tag">What's Next</div>
+      <h2 class="section-title">Future Opportunities</h2>
+      <p class="section-desc">Expanding EcoLoop's impact through emerging technology, community building, and strategic partnerships.</p>
+    </div>
+
+    <div class="future-layout">
+      <!-- Left: Product Roadmap -->
+      <div>
+        <div style="font-family:var(--f-display);font-size:18px;font-weight:700;color:#fff;margin-bottom:16px;display:flex;align-items:center;gap:10px;">
+          <img src="https://img.icons8.com/fluency/48/road.png" alt="roadmap" style="width:22px;height:22px;">
+          Product Roadmap
+        </div>
+        <div class="roadmap">
+          <div class="roadmap-item">
+            <div class="roadmap-dot" style="background:rgba(0,255,170,0.12);border:2px solid rgba(0,255,170,0.3);">
+              <img src="https://img.icons8.com/fluency/48/smartwatch.png" alt="wearable">
+            </div>
+            <div class="roadmap-body">
+              <div class="roadmap-phase" style="color:var(--c-accent);">Phase 1 · Q1 2025</div>
+              <div class="roadmap-heading">Wearable Integration</div>
+              <div class="roadmap-desc">Sync with Apple Watch & Fitbit to auto-track eco-friendly transport (cycling, walking) and convert real-world activity into XP rewards.</div>
+              <div class="roadmap-tags">
+                <span class="roadmap-tag">HealthKit</span>
+                <span class="roadmap-tag">WearOS</span>
+                <span class="roadmap-tag">Auto-track</span>
+              </div>
+            </div>
+          </div>
+          <div class="roadmap-item">
+            <div class="roadmap-dot" style="background:rgba(0,212,255,0.12);border:2px solid rgba(0,212,255,0.3);">
+              <img src="https://img.icons8.com/fluency/48/artificial-intelligence.png" alt="ai">
+            </div>
+            <div class="roadmap-body">
+              <div class="roadmap-phase" style="color:var(--c-accent-2);">Phase 2 · Q2 2025</div>
+              <div class="roadmap-heading">AI-Powered Personalization</div>
+              <div class="roadmap-desc">Machine learning adapts challenge difficulty, recommends actions based on behavior patterns, and predicts engagement drop-off to send smart nudges.</div>
+              <div class="roadmap-tags">
+                <span class="roadmap-tag">ML Model</span>
+                <span class="roadmap-tag">Recommendations</span>
+                <span class="roadmap-tag">Nudge Engine</span>
+              </div>
+            </div>
+          </div>
+          <div class="roadmap-item">
+            <div class="roadmap-dot" style="background:rgba(167,139,250,0.12);border:2px solid rgba(167,139,250,0.3);">
+              <img src="https://img.icons8.com/fluency/48/conference-call.png" alt="community">
+            </div>
+            <div class="roadmap-body">
+              <div class="roadmap-phase" style="color:var(--c-accent-3);">Phase 3 · Q3 2025</div>
+              <div class="roadmap-heading">Community & Team Challenges</div>
+              <div class="roadmap-desc">Group challenges for offices, universities, and neighborhoods. Corporate ESG integration with team dashboards and impact reporting.</div>
+              <div class="roadmap-tags">
+                <span class="roadmap-tag">Teams</span>
+                <span class="roadmap-tag">ESG</span>
+                <span class="roadmap-tag">B2B</span>
+              </div>
+            </div>
+          </div>
+          <div class="roadmap-item">
+            <div class="roadmap-dot" style="background:rgba(255,179,71,0.12);border:2px solid rgba(255,179,71,0.3);">
+              <img src="https://img.icons8.com/fluency/48/handshake.png" alt="partner">
+            </div>
+            <div class="roadmap-body">
+              <div class="roadmap-phase" style="color:var(--c-accent-warm);">Phase 4 · Q4 2025</div>
+              <div class="roadmap-heading">Brand Partnerships & Marketplace</div>
+              <div class="roadmap-desc">Partner with sustainable brands for real reward redemption — eco-products, carbon offset certificates, and exclusive experiences.</div>
+              <div class="roadmap-tags">
+                <span class="roadmap-tag">Marketplace</span>
+                <span class="roadmap-tag">Carbon Credits</span>
+                <span class="roadmap-tag">Rewards API</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: Concept Cards + Vision -->
+      <div class="future-right">
+        <div class="concept-card">
+          <div class="concept-visual" style="background:linear-gradient(135deg,rgba(0,255,170,0.08),rgba(0,212,255,0.08));">
+            <img src="https://img.icons8.com/fluency/96/augmented-reality.png" alt="ar">
+          </div>
+          <div class="concept-body">
+            <div class="concept-title">AR Eco-Scanner</div>
+            <div class="concept-desc">Point camera at products to scan sustainability scores, carbon footprint data, and earn bonus XP for choosing eco-friendly alternatives.</div>
+            <div class="concept-metrics">
+              <div class="concept-metric">
+                <span class="concept-metric-num">2.1B</span>
+                <span class="concept-metric-label">AR users by 2025</span>
+              </div>
+              <div class="concept-metric">
+                <span class="concept-metric-num">+45%</span>
+                <span class="concept-metric-label">engagement boost</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="concept-card">
+          <div class="concept-visual" style="background:linear-gradient(135deg,rgba(167,139,250,0.08),rgba(129,140,248,0.08));">
+            <img src="https://img.icons8.com/fluency/96/blockchain-new-logo.png" alt="nft">
+          </div>
+          <div class="concept-body">
+            <div class="concept-title">Impact NFT Badges</div>
+            <div class="concept-desc">Blockchain-verified impact certificates as collectible badges — proving real-world environmental contribution with verifiable on-chain data.</div>
+            <div class="concept-metrics">
+              <div class="concept-metric">
+                <span class="concept-metric-num">12M+</span>
+                <span class="concept-metric-label">eco-NFT market</span>
+              </div>
+              <div class="concept-metric">
+                <span class="concept-metric-num">+28%</span>
+                <span class="concept-metric-label">retention lift</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="concept-card">
+          <div class="concept-visual" style="background:linear-gradient(135deg,rgba(255,179,71,0.08),rgba(255,107,107,0.08));">
+            <img src="https://img.icons8.com/fluency/96/map-marker.png" alt="local">
+          </div>
+          <div class="concept-body">
+            <div class="concept-title">Hyperlocal Eco-Map</div>
+            <div class="concept-desc">Location-based challenges tied to local recycling centers, farmers' markets, and green spaces — bridging digital engagement with physical action.</div>
+            <div class="concept-metrics">
+              <div class="concept-metric">
+                <span class="concept-metric-num">3x</span>
+                <span class="concept-metric-label">local engagement</span>
+              </div>
+              <div class="concept-metric">
+                <span class="concept-metric-num">67%</span>
+                <span class="concept-metric-label">prefer local</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Reflection callout -->
+        <div class="reflection-strip">
+          <div class="reflection-icon">
+            <img src="https://img.icons8.com/fluency/48/heart-with-pulse.png" alt="reflect">
+          </div>
+          <div class="reflection-body">
+            <div class="reflection-heading">Design for Lasting Change</div>
+            <div class="reflection-text">This project reinforced my belief that great UX isn't just about usability — it's about designing systems that create meaningful behavior change. EcoLoop proved that gamification, when done with empathy, can make sustainability not just achievable, but genuinely enjoyable.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="page-footer">
+      <span class="page-footer-text">EcoLoop · UX/UI Case Study · 2024 · Thank you for reading</span>
+      <span class="page-footer-brand">EcoLoop</span>
+    </div>
+  </div>
+  <div class="page-num">10 / 10</div>
+</div>
+
+</body>
+</html>
